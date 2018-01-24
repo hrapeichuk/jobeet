@@ -18,31 +18,38 @@ class Affiliate
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
      * @ORM\ManyToMany(targetEntity="Category", inversedBy="affiliates")
      * @ORM\JoinTable(name="affiliates_categories")
      */
     private $categories;
+
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $url;
+
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $email;
+
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $token;
+
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $isActive;
+
     /**
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
+
     /**
      * Constructor
      */
@@ -56,7 +63,7 @@ class Affiliate
      *
      * @return integer
      */
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -66,9 +73,9 @@ class Affiliate
      *
      * @param string $url
      *
-     * @return Affiliate
+     * @return self
      */
-    public function setUrl($url)
+    public function setUrl(?string $url) : self
     {
         $this->url = $url;
 
@@ -80,7 +87,7 @@ class Affiliate
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl() : ?string
     {
         return $this->url;
     }
@@ -90,9 +97,9 @@ class Affiliate
      *
      * @param string $email
      *
-     * @return Affiliate
+     * @return self
      */
-    public function setEmail($email)
+    public function setEmail(?string $email) : self
     {
         $this->email = $email;
 
@@ -104,7 +111,7 @@ class Affiliate
      *
      * @return string
      */
-    public function getEmail()
+    public function getEmail() : ?string
     {
         return $this->email;
     }
@@ -114,9 +121,9 @@ class Affiliate
      *
      * @param string $token
      *
-     * @return Affiliate
+     * @return self
      */
-    public function setToken($token)
+    public function setToken(?string $token) : self
     {
         $this->token = $token;
 
@@ -128,7 +135,7 @@ class Affiliate
      *
      * @return string
      */
-    public function getToken()
+    public function getToken() : ?string
     {
         return $this->token;
     }
@@ -138,9 +145,9 @@ class Affiliate
      *
      * @param boolean $isActive
      *
-     * @return Affiliate
+     * @return self
      */
-    public function setIsActive($isActive)
+    public function setIsActive(?bool $isActive) : self
     {
         $this->isActive = $isActive;
 
@@ -152,7 +159,7 @@ class Affiliate
      *
      * @return boolean
      */
-    public function getIsActive()
+    public function getIsActive() : ?bool
     {
         return $this->isActive;
     }
@@ -162,9 +169,9 @@ class Affiliate
      *
      * @param \DateTime $createdAt
      *
-     * @return Affiliate
+     * @return self
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(?\DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
@@ -176,7 +183,7 @@ class Affiliate
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
+    public function getCreatedAt() : ?\DateTime
     {
         return $this->createdAt;
     }
@@ -194,11 +201,11 @@ class Affiliate
     /**
      * Add category
      *
-     * @param \AppBundle\Entity\Category $category
+     * @param Category $category
      *
      * @return Affiliate
      */
-    public function addCategory(Category $category)
+    public function addCategory(?Category $category)
     {
         $this->categories[] = $category;
 
@@ -208,9 +215,9 @@ class Affiliate
     /**
      * Remove category
      *
-     * @param \AppBundle\Entity\Category $category
+     * @param Category $category
      */
-    public function removeCategory(Category $category)
+    public function removeCategory(?Category $category)
     {
         $this->categories->removeElement($category);
     }
@@ -218,9 +225,9 @@ class Affiliate
     /**
      * Get categories
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
-    public function getCategories()
+    public function getCategories() : ?ArrayCollection
     {
         return $this->categories;
     }

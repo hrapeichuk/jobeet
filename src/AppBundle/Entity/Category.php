@@ -58,7 +58,7 @@ class Category
      *
      * @return Category
      */
-    public function setName($name)
+    public function setName(?string $name)
     {
         $this->name = $name;
 
@@ -70,7 +70,7 @@ class Category
      *
      * @return string
      */
-    public function getName()
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -82,7 +82,7 @@ class Category
      *
      * @return Category
      */
-    public function addJob(Job $job)
+    public function addJob(?Job $job)
     {
         $this->jobs[] = $job;
 
@@ -94,7 +94,7 @@ class Category
      *
      * @param \AppBundle\Entity\Job $job
      */
-    public function removeJob(Job $job)
+    public function removeJob(?Job $job)
     {
         $this->jobs->removeElement($job);
     }
@@ -116,7 +116,7 @@ class Category
      *
      * @return Category
      */
-    public function addAffiliate(Affiliate $affiliate)
+    public function addAffiliate(?Affiliate $affiliate)
     {
         $this->affiliates[] = $affiliate;
 
@@ -128,7 +128,7 @@ class Category
      *
      * @param \AppBundle\Entity\Affiliate $affiliate
      */
-    public function removeAffiliate(Affiliate $affiliate)
+    public function removeAffiliate(?Affiliate $affiliate)
     {
         $this->affiliates->removeElement($affiliate);
     }
@@ -136,9 +136,9 @@ class Category
     /**
      * Get affiliates
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
-    public function getAffiliates()
+    public function getAffiliates() : ?ArrayCollection
     {
         return $this->affiliates;
     }
