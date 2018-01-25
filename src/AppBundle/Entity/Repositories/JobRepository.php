@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Repositories;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 class JobRepository extends EntityRepository
 {
@@ -40,7 +41,7 @@ class JobRepository extends EntityRepository
 
         try {
             $job = $query->getSingleResult();
-        } catch (\Doctrine\Orm\NoResultException | NonUniqueResultException $e) {
+        } catch (NoResultException | NonUniqueResultException $e) {
             $job = null;
         }
 
