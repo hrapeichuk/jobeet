@@ -25,7 +25,7 @@ class JobController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $jobs = $em->getRepository(Job::class)->findAll();
+        $jobs = $em->getRepository(Job::class)->getActiveJobs();
 
         return $this->render('job/index.html.twig', [
             'jobs' => $jobs
@@ -33,7 +33,7 @@ class JobController extends Controller
     }
 
     /**
-     * @Route("/{id}", name="job_show")
+     * @Route("/job/{company}/{location}/{id}/{position}", name="job_show", requirements={"id" = "\d+"})
      * @Method("GET")
      *
      * @param Job $job
@@ -41,6 +41,7 @@ class JobController extends Controller
      */
     public function showAction(Job $job)
     {
+        var_dump('BBB'); die;
         $deleteForm = $this->createDeleteForm($job);
 
         return $this->render('job/show.html.twig', [
