@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,6 +33,7 @@ class Category
      * @ORM\ManyToMany(targetEntity="Affiliate", mappedBy="categories")
      */
     private $affiliates;
+
     /**
      * Constructor
      */
@@ -56,9 +58,9 @@ class Category
      *
      * @param string $name
      *
-     * @return Category
+     * @return self
      */
-    public function setName(?string $name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -78,11 +80,11 @@ class Category
     /**
      * Add job
      *
-     * @param \AppBundle\Entity\Job $job
+     * @param Job $job
      *
-     * @return Category
+     * @return self
      */
-    public function addJob(?Job $job)
+    public function addJob(?Job $job) : self
     {
         $this->jobs[] = $job;
 
@@ -92,7 +94,7 @@ class Category
     /**
      * Remove job
      *
-     * @param \AppBundle\Entity\Job $job
+     * @param Job $job
      */
     public function removeJob(?Job $job)
     {
@@ -102,7 +104,7 @@ class Category
     /**
      * Get jobs
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getJobs()
     {
@@ -112,11 +114,11 @@ class Category
     /**
      * Add affiliate
      *
-     * @param \AppBundle\Entity\Affiliate $affiliate
+     * @param Affiliate $affiliate
      *
      * @return Category
      */
-    public function addAffiliate(?Affiliate $affiliate)
+    public function addAffiliate(?Affiliate $affiliate) : self
     {
         $this->affiliates[] = $affiliate;
 
@@ -126,7 +128,7 @@ class Category
     /**
      * Remove affiliate
      *
-     * @param \AppBundle\Entity\Affiliate $affiliate
+     * @param Affiliate $affiliate
      */
     public function removeAffiliate(?Affiliate $affiliate)
     {
@@ -138,7 +140,7 @@ class Category
      *
      * @return ArrayCollection
      */
-    public function getAffiliates() : ?ArrayCollection
+    public function getAffiliates() : ArrayCollection
     {
         return $this->affiliates;
     }

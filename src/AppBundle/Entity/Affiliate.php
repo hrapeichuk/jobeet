@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -75,7 +76,7 @@ class Affiliate
      *
      * @return self
      */
-    public function setUrl(?string $url) : self
+    public function setUrl(string $url) : self
     {
         $this->url = $url;
 
@@ -99,7 +100,7 @@ class Affiliate
      *
      * @return self
      */
-    public function setEmail(?string $email) : self
+    public function setEmail(string $email) : self
     {
         $this->email = $email;
 
@@ -123,7 +124,7 @@ class Affiliate
      *
      * @return self
      */
-    public function setToken(?string $token) : self
+    public function setToken(string $token) : self
     {
         $this->token = $token;
 
@@ -225,9 +226,9 @@ class Affiliate
     /**
      * Get categories
      *
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getCategories() : ?ArrayCollection
+    public function getCategories() : Collection
     {
         return $this->categories;
     }

@@ -116,7 +116,7 @@ class Job
      *
      * @return self
      */
-    public function setType(?string $type) : self
+    public function setType(string $type) : self
     {
         $this->type = $type;
 
@@ -140,7 +140,7 @@ class Job
      *
      * @return self
      */
-    public function setCompany(?string $company) : self
+    public function setCompany(string $company) : self
     {
         $this->company = $company;
 
@@ -212,7 +212,7 @@ class Job
      *
      * @return self
      */
-    public function setPosition(?string $position) : self
+    public function setPosition(string $position) : self
     {
         $this->position = $position;
 
@@ -236,7 +236,7 @@ class Job
      *
      * @return self
      */
-    public function setLocation(?string $location) : self
+    public function setLocation(string $location) : self
     {
         $this->location = $location;
 
@@ -260,7 +260,7 @@ class Job
      *
      * @return self
      */
-    public function setDescription(?string $description) : self
+    public function setDescription(string $description) : self
     {
         $this->description = $description;
 
@@ -284,7 +284,7 @@ class Job
      *
      * @return self
      */
-    public function setHowToApply(?string $howToApply) : self
+    public function setHowToApply(string $howToApply) : self
     {
         $this->howToApply = $howToApply;
 
@@ -308,7 +308,7 @@ class Job
      *
      * @return self
      */
-    public function setToken(?string $token) : self
+    public function setToken(string $token) : self
     {
         $this->token = $token;
 
@@ -380,7 +380,7 @@ class Job
      *
      * @return self
      */
-    public function setEmail(?string $email) : self
+    public function setEmail(string $email) : self
     {
         $this->email = $email;
 
@@ -404,7 +404,7 @@ class Job
      *
      * @return self
      */
-    public function setExpiresAt(? \DateTime $expiresAt) : self
+    public function setExpiresAt(\DateTime $expiresAt) : self
     {
         $this->expiresAt = $expiresAt;
 
@@ -428,7 +428,7 @@ class Job
      *
      * @return self
      */
-    public function setCreatedAt(?\DateTime $createdAt) : self
+    public function setCreatedAt(\DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
@@ -452,7 +452,7 @@ class Job
      *
      * @return self
      */
-    public function setUpdatedAt(?\DateTime $updatedAt) : self
+    public function setUpdatedAt(\DateTime $updatedAt) : self
     {
         $this->updatedAt = $updatedAt;
 
@@ -470,28 +470,26 @@ class Job
     }
 
     /**
-     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
-    public function setCreatedAtValue()
+    public function preUpdate()
     {
-        if (!$this->getCreatedAt()) {
-            $this->createdAt = new \DateTime();
-        }
+        $this->updatedAt = new \DateTime();
     }
 
     /**
-     * @ORM\PreUpdate
      * @ORM\PrePersist
      */
-    public function setUpdatedAtValue()
+    public function prePersist()
     {
+        $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
 
     /**
      * Set category
      *
-     * @param \AppBundle\Entity\Category $category
+     * @param Category $category
      *
      * @return self
      */
