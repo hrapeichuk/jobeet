@@ -42,24 +42,43 @@ class JobFixture extends Fixture
         $jobExtremeSensio->setEmail('job@example.com');
         $jobExtremeSensio->setExpiresAt(new \DateTime('2017-10-10'));
 
-        $job_expired = new Job();
-        $job_expired->setCategory($em->merge($this->getReference('category-programming')));
-        $job_expired->setType('full-time');
-        $job_expired->setCompany('Sensio Labs');
-        $job_expired->setLogo('sensio-labs.gif');
-        $job_expired->setUrl('http://www.sensiolabs.com/');
-        $job_expired->setPosition('Web Developer Expired');
-        $job_expired->setLocation('Paris, France');
-        $job_expired->setDescription('Lorem ipsum dolor sit amet, consectetur adipisicing elit.');
-        $job_expired->setHowToApply('Send your resume to lorem.ipsum [at] dolor.sit');
-        $job_expired->setIsPublic(true);
-        $job_expired->setIsActivated(true);
-        $job_expired->setToken('job_expired');
-        $job_expired->setEmail('job@example.com');
-        $job_expired->setCreatedAt(new \DateTime('2005-12-01'));
+        $jobExpired = new Job();
+        $jobExpired->setCategory($em->merge($this->getReference('category-programming')));
+        $jobExpired->setType('full-time');
+        $jobExpired->setCompany('Sensio Labs');
+        $jobExpired->setLogo('sensio-labs.gif');
+        $jobExpired->setUrl('http://www.sensiolabs.com/');
+        $jobExpired->setPosition('Web Developer Expired');
+        $jobExpired->setLocation('Paris, France');
+        $jobExpired->setDescription('Lorem ipsum dolor sit amet, consectetur adipisicing elit.');
+        $jobExpired->setHowToApply('Send your resume to lorem.ipsum [at] dolor.sit');
+        $jobExpired->setIsPublic(true);
+        $jobExpired->setIsActivated(true);
+        $jobExpired->setToken('job_expired');
+        $jobExpired->setEmail('job@example.com');
+        $jobExpired->setExpiresAt(new \DateTime('2005-12-01'));
 
         $em->persist($jobSensioLabs);
         $em->persist($jobExtremeSensio);
+        $em->persist($jobExpired);
+
+        for($i = 100; $i <= 130; $i++)
+        {
+            $job = new Job();
+            $job->setCategory($em->merge($this->getReference('category-programming')));
+            $job->setType('full-time');
+            $job->setCompany('Company '.$i);
+            $job->setPosition('Web Developer');
+            $job->setLocation('Paris, France');
+            $job->setDescription('Lorem ipsum dolor sit amet, consectetur adipisicing elit.');
+            $job->setHowToApply('Send your resume to lorem.ipsum [at] dolor.sit');
+            $job->setIsPublic(true);
+            $job->setIsActivated(true);
+            $job->setToken('job_'.$i);
+            $job->setEmail('job@example.com');
+
+            $em->persist($job);
+        }
 
         $em->flush();
     }

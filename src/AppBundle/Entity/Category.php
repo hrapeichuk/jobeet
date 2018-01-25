@@ -34,6 +34,8 @@ class Category
      */
     private $affiliates;
 
+    private $activeJobs;
+
     /**
      * Constructor
      */
@@ -143,5 +145,15 @@ class Category
     public function getAffiliates() : ArrayCollection
     {
         return $this->affiliates;
+    }
+
+    public function setActiveJobs($jobs)
+    {
+        $this->activeJobs = $jobs;
+    }
+
+    public function getActiveJobs()
+    {
+        return $this->activeJobs;
     }
 }
