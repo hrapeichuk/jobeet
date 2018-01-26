@@ -487,8 +487,7 @@ class Job
         $this->updatedAt = new \DateTime();
 
         if (!$this->getExpiresAt()) {
-            $now = $this->getCreatedAt() ? $this->getCreatedAt()->format('U') : time();
-            $this->expiresAt = new \DateTime('@'.$now + 86400 * 30);
+            $this->expiresAt = (clone $this->createdAt)->modify('+ 30 days');
         }
     }
 
