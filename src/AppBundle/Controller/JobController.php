@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class JobController extends Controller
 {
     /**
-     * @Route("/", name="job_index")
+     * @Route("/", name="job.index")
      *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
@@ -35,7 +35,7 @@ class JobController extends Controller
     }
 
     /**
-     * @Route("/job/{company}/{location}/{id}/{position}", name="job_show", requirements={"id" = "\d+"})
+     * @Route("/job/{company}/{location}/{id}/{position}", name="job.show", requirements={"id" = "\d+"})
      * @ParamConverter("job", options={"repository_method" = "getActiveJob"})
      * @Method("GET")
      *
