@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Utils\Jobeet;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -484,6 +485,10 @@ class Job
     {
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
+
+        if (!$this->getExpiresAt()) {
+            $this->expiresAt = (clone $this->createdAt)->modify('+ 30 days');
+        }
     }
 
     /**
@@ -508,5 +513,21 @@ class Job
     public function getCategory() : Category
     {
         return $this->category;
+    }
+
+
+    public function getCompanySlug()
+    {
+        return Jobeet::slugify($this->getCompany());
+    }
+
+    public function getPositionSlug()
+    {
+        return Jobeet::slugify($this->getPosition());
+    }
+
+    public function getLocationSlug()
+    {
+        return Jobeet::slugify($this->getLocation());
     }
 }

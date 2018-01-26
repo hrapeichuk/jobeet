@@ -84,7 +84,7 @@ class Category
      *
      * @return self
      */
-    public function addJob(?Job $job) : self
+    public function addJob(Job $job) : self
     {
         $this->jobs[] = $job;
 
@@ -96,7 +96,7 @@ class Category
      *
      * @param Job $job
      */
-    public function removeJob(?Job $job)
+    public function removeJob(Job $job)
     {
         $this->jobs->removeElement($job);
     }
@@ -118,7 +118,7 @@ class Category
      *
      * @return Category
      */
-    public function addAffiliate(?Affiliate $affiliate) : self
+    public function addAffiliate(Affiliate $affiliate) : self
     {
         $this->affiliates[] = $affiliate;
 
@@ -130,7 +130,7 @@ class Category
      *
      * @param Affiliate $affiliate
      */
-    public function removeAffiliate(?Affiliate $affiliate)
+    public function removeAffiliate(Affiliate $affiliate)
     {
         $this->affiliates->removeElement($affiliate);
     }
