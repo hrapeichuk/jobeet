@@ -11,18 +11,23 @@ class JobRepository extends EntityRepository
     /**
      * Gets all active (not expired) jobs
      * @param null $categoryId
-     * @param null $max
+     * @param null $limit
+     * @param null $offset
      * @return array
      */
-    public function getActiveJobs($categoryId = null, $max = null)
+    public function getActiveJobs($categoryId = null, $limit = null, $offset = null)
     {
         $qb = $this->createQueryBuilder('j')
             ->where('j.expiresAt > :date')
             ->setParameter('date', new \DateTime())
             ->orderBy('j.expiresAt', 'DESC');
 
-        if ($max) {
-            $qb->setMaxResults($max);
+        if ($limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        if ($offset) {
+            $qb->setFirstResult($offset);
         }
 
         if ($categoryId) {
@@ -33,6 +38,21 @@ class JobRepository extends EntityRepository
         $query = $qb->getQuery();
 
         return $query->getResult();
+    }
+
+    public function countActiveJobs($categoryId = null)
+    {
+        $qb = $this->createQueryBuilder('j')
+            ->select('count(j.id)')
+            ->where('j.expiresAt > :date')
+            ->setParameter('date', new \DateTime());
+        if ($categoryId) {
+            $qb->andWhere('j.category = :category_id')
+                ->setParameter('category_id', $categoryId);
+        }
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
     }
 
     /**

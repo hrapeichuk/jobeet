@@ -51,4 +51,15 @@ class JobController extends Controller
             'delete_form' => $deleteForm->createView(),
         ]);
     }
+
+    public function activeJobs(Category $category, $jobsPerPage, $page)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $activeJobs = $em->getRepository(Job::class)->getActiveJobs($category->getId(), $jobsPerPage, ($page - 1) * $jobsPerPage);
+
+        return $this->render('job/list.html.twig', [
+            'jobs' => $activeJobs,
+        ]);
+    }
 }
