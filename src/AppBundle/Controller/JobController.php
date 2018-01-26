@@ -29,17 +29,6 @@ class JobController extends Controller
 
         $categories = $em->getRepository(Category::class)->getWithJobs();
 
-        foreach ($categories as $category) {
-            $category->setActiveJobs(
-                $em->getRepository('AppBundle:Job')->getActiveJobs(
-                    $category->getId(),
-                    $this->getParameter('max_jobs_on_homepage')
-                )
-            );
-        }
-
-        $jobs = $em->getRepository(Job::class)->getActiveJobs();
-
         return $this->render('job/index.html.twig', [
             'categories' => $categories
         ]);

@@ -8,11 +8,17 @@ use Doctrine\ORM\NoResultException;
 
 class JobRepository extends EntityRepository
 {
+    /**
+     * Gets all active (not expired) jobs
+     * @param null $categoryId
+     * @param null $max
+     * @return array
+     */
     public function getActiveJobs($categoryId = null, $max = null)
     {
         $qb = $this->createQueryBuilder('j')
             ->where('j.expiresAt > :date')
-            ->setParameter('date', date('Y-m-d H:i:s', time()))
+            ->setParameter('date', new \DateTime())
             ->orderBy('j.expiresAt', 'DESC');
 
         if ($max) {
@@ -29,13 +35,17 @@ class JobRepository extends EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @param int $id Id of the Job
+     * @return mixed|null
+     */
     public function getActiveJob($id)
     {
         $query = $this->createQueryBuilder('j')
             ->where('j.id = :id')
             ->setParameter('id', $id)
             ->andWhere('j.expiresAt > :date')
-            ->setParameter('date', date('Y-m-d H:i:s', time()))
+            ->setParameter('date', (new \DateTime()))
             ->setMaxResults(1)
             ->getQuery();
 

@@ -29,6 +29,11 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    AppBundle\Twig\AppExtension:
+        class: 'AppBundle\Twig\AppExtension'
+        arguments:
+            $maxJobsOnHomepage: '%max_jobs_on_homepage%'
+
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:
     #     arguments:
