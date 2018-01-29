@@ -19,37 +19,37 @@
 
     {{ render(controller(
         'AppBundle\\Controller\\JobController::activeJobs',
-        { 'id': category.id, 'jobsPerPage': jobs_per_page, 'page': current_page}
+        { 'id': category.id, 'jobsPerPage': jobsPerPage, 'page': currentPage}
     )) }}
 
-    {% if last_page > 1 %}
+    {% if lastPage > 1 %}
         <div class="pagination">
             <a href="{{ path('category.show', { 'slug': category.slug, 'page': 1 }) }}">
                 <img src="{{ asset('images/first.png') }}" alt="First page" title="First page" />
             </a>
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': previous_page }) }}">
+            <a href="{{ path('category.show', { 'slug': category.slug, 'page': previousPage }) }}">
                 <img src="{{ asset('images/previous.png') }}" alt="Previous page" title="Previous page" />
             </a>
-            {% for page in 1..last_page %}
-                {% if page == current_page %}
+            {% for page in 1..lastPage %}
+                {% if page == currentPage %}
                     {{ page }}
                 {% else %}
                     <a href="{{ path('category.show', { 'slug': category.slug, 'page': page }) }}">{{ page }}</a>
                 {% endif %}
             {% endfor %}
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': next_page }) }}">
+            <a href="{{ path('category.show', { 'slug': category.slug, 'page': nextPage }) }}">
                 <img src="{{ asset('images/next.png') }}" alt="Next page" title="Next page" />
             </a>
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': last_page }) }}">
+            <a href="{{ path('category.show', { 'slug': category.slug, 'page': lastPage }) }}">
                 <img src="{{ asset('images/last.png') }}" alt="Last page" title="Last page" />
             </a>
         </div>
     {% endif %}
 
     <div class="pagination_desc">
-        <strong>{{ total_jobs }}</strong> jobs in this category
-        {% if last_page > 1 %}
-            - page <strong>{{ current_page }}/{{ last_page }}</strong>
+        <strong>{{ totalJobs }}</strong> jobs in this category
+        {% if lastPage > 1 %}
+            - page <strong>{{ currentPage }}/{{ lastPage }}</strong>
         {% endif %}
     </div>
 {% endblock %}

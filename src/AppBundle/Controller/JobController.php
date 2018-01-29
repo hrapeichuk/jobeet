@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
+use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -30,8 +31,17 @@ class JobController extends Controller
         $categories = $em->getRepository(Category::class)->getWithJobs();
 
         return $this->render('job/index.html.twig', [
-            'categories' => $categories
+            'categories' => $this->prepareJobCategories($em, $categories)
         ]);
+    }
+
+    protected function prepareJobCategories(ObjectManager $em, $categories)
+    {
+        foreach ($categories as $category) {
+            $category->setMoreJobs($em->getRepository(Job::class)->countActiveJobs($category->getId()) - $this->container->getParameter('max_jobs_on_homepage'));
+        }
+
+        return $categories;
     }
 
     /**

@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,20 +50,20 @@ class CategoryController extends Controller
             throw $this->createNotFoundException('Unable to find Category entity.');
         }
 
-        $total_jobs = $em->getRepository(Job::class)->countActiveJobs($category->getId());
-        $jobs_per_page = $this->container->getParameter('max_jobs_on_category');
-        $last_page = ceil($total_jobs / $jobs_per_page);
-        $previous_page = $page > 1 ? $page - 1 : 1;
-        $next_page = $page < $last_page ? $page + 1 : $last_page;
+        $totalJobs = $em->getRepository(Job::class)->countActiveJobs($category->getId());
+        $jobsPerPage = $this->container->getParameter('max_jobs_on_category');
+        $lastPage = ceil($totalJobs / $jobsPerPage);
+        $previousPage = $page > 1 ? $page - 1 : 1;
+        $nextPage = $page < $lastPage ? $page + 1 : $lastPage;
 
         return $this->render('category/show.html.twig', [
             'category' => $category,
-            'jobs_per_page' => $jobs_per_page,
-            'last_page' => $last_page,
-            'previous_page' => $previous_page,
-            'current_page' => $page,
-            'next_page' => $next_page,
-            'total_jobs' => $total_jobs
+            'jobsPerPage' => $jobsPerPage,
+            'lastPage' => $lastPage,
+            'previousPage' => $previousPage,
+            'currentPage' => $page,
+            'nextPage' => $nextPage,
+            'totalJobs' => $totalJobs
         ]);
     }
 }
