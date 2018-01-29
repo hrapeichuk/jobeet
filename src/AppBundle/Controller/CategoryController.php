@@ -5,8 +5,10 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -34,21 +36,17 @@ class CategoryController extends Controller
     }*/
 
     /**
-     * @Route("/{slug}/{page}", defaults={"page": 1}, name="category.show")
+     * @Route("/{slug}/{page}", defaults={"page": 1}, name="category.show", requirements={"page"="\d+"})
      * @Method("GET")
-     *
+     * @ParamConverter("job", options={"repository_method" = "findBySlug"})
      * @param string $slug
      * @param $page
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Category $category
+     * @return Response
      */
-    public function showAction($slug, $page)
+    public function showAction($slug, $page, Category $category) : Response
     {
         $em = $this->getDoctrine()->getManager();
-
-        $category = $em->getRepository(Category::class)->findOneBy(['slug' => $slug]);
-        if (!$category) {
-            throw $this->createNotFoundException('Unable to find Category entity.');
-        }
 
         $totalJobs = $em->getRepository(Job::class)->countActiveJobs($category->getId());
         $jobsPerPage = $this->container->getParameter('max_jobs_on_category');

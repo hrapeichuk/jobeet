@@ -35,6 +35,11 @@ class JobController extends Controller
         ]);
     }
 
+    /**
+     * @param ObjectManager $em
+     * @param $categories
+     * @return mixed
+     */
     protected function prepareJobCategories(ObjectManager $em, $categories)
     {
         foreach ($categories as $category) {
@@ -62,6 +67,12 @@ class JobController extends Controller
         ]);
     }
 
+    /**
+     * @param Category $category
+     * @param $jobsPerPage
+     * @param $page
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function activeJobs(Category $category, $jobsPerPage, $page)
     {
         $em = $this->getDoctrine()->getManager();
