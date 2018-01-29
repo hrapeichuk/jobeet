@@ -36,6 +36,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "phpunit/phpunit": "^6.5",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
