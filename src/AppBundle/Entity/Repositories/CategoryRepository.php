@@ -6,7 +6,10 @@ use Doctrine\ORM\EntityRepository;
 
 class CategoryRepository extends EntityRepository
 {
-    public function getWithJobs()
+    /**
+     * @return array
+     */
+    public function getWithJobs() : array
     {
         return $this->createQueryBuilder('c')
             ->select('c')
@@ -17,6 +20,10 @@ class CategoryRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * @param $slug
+     * @return null|object
+     */
     public function findBySlug($slug)
     {
         return $this->findOneBy(['slug' => $slug]);

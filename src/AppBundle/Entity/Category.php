@@ -183,14 +183,4 @@ class Category
 
         return $this;
     }
-
-    public function setMoreJobs($jobs)
-    {
-        $this->moreJobs = $jobs >=  0 ? $jobs : 0;
-    }
-
-    public function getMoreJobs()
-    {
-        return $this->moreJobs;
-    }
 }

@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class JobController
- *
  * @Route("category")
  */
 class CategoryController extends Controller
@@ -43,6 +41,8 @@ class CategoryController extends Controller
      * @param $page
      * @param Category $category
      * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showAction($slug, $page, Category $category) : Response
     {
