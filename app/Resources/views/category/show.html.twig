@@ -17,10 +17,7 @@
         <h1>{{ category.name }}</h1>
     </div>
 
-    {{ render(controller(
-        'AppBundle\\Controller\\JobController::activeJobs',
-        { 'id': category.id, 'jobsPerPage': jobsPerPage, 'page': currentPage}
-    )) }}
+    {{ include('job/list.html.twig') }}
 
     {% if lastPage > 1 %}
         <div class="pagination">

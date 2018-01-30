@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
+use AppBundle\Services\CategoryService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -40,11 +41,12 @@ class CategoryController extends Controller
      * @param string $slug
      * @param $page
      * @param Category $category
+     * @param CategoryService $categoryService
      * @return Response
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function showAction($slug, $page, Category $category) : Response
+    public function showAction($slug, $page, Category $category, CategoryService $categoryService) : Response
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -54,9 +56,13 @@ class CategoryController extends Controller
         $previousPage = $page > 1 ? $page - 1 : 1;
         $nextPage = $page < $lastPage ? $page + 1 : $lastPage;
 
+        $categoryModel = $categoryService->getCategoryModel($category);
+        $activeJobs = $em->getRepository(Job::class)->getActiveJobs($category->getId(), $jobsPerPage, ($page - 1) * $jobsPerPage);
+        $categoryModel->setActiveJobs($activeJobs);
+
         return $this->render('category/show.html.twig', [
-            'category' => $category,
-            'jobsPerPage' => $jobsPerPage,
+            'category' => $categoryModel,
+
             'lastPage' => $lastPage,
             'previousPage' => $previousPage,
             'currentPage' => $page,

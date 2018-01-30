@@ -2,6 +2,7 @@
 
 namespace AppBundle\Services;
 
+use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
 use AppBundle\Models\CategoryModel;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,16 +44,25 @@ class CategoryService
             $activeJobs = $jobRepository->getActiveJobs($category->getId(), $maxActiveJobs);
 
             // Model populating
-            $categoryModel = new CategoryModel($category);
-            $categoryModel->setId($category->getId());
-            $categoryModel->setName($category->getName());
-            $categoryModel->setSlug($category->getSlug());
-            $categoryModel->setAffiliates($category->getAffiliates());
+            $categoryModel = $this->getCategoryModel($category);
             $categoryModel->setMoreJobs($moreJobs);
             $categoryModel->setActiveJobs($activeJobs);
+
             $categoriesModels[] = $categoryModel;
         }
 
         return $categoriesModels;
+    }
+
+    public function getCategoryModel(Category $category)
+    {
+        // Model populating
+        $categoryModel = new CategoryModel($category);
+        $categoryModel->setId($category->getId());
+        $categoryModel->setName($category->getName());
+        $categoryModel->setSlug($category->getSlug());
+        $categoryModel->setAffiliates($category->getAffiliates());
+
+        return $categoryModel;
     }
 }
