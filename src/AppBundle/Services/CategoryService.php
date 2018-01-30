@@ -44,6 +44,10 @@ class CategoryService
 
             // Model populating
             $categoryModel = new CategoryModel($category);
+            $categoryModel->setId($category->getId());
+            $categoryModel->setName($category->getName());
+            $categoryModel->setSlug($category->getSlug());
+            $categoryModel->setAffiliates($category->getAffiliates());
             $categoryModel->setMoreJobs($moreJobs);
             $categoryModel->setActiveJobs($activeJobs);
             $categoriesModels[] = $categoryModel;

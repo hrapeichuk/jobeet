@@ -41,8 +41,6 @@ class Category
      */
     private $affiliates;
 
-    private $moreJobs;
-
     /**
      * Constructor
      */
@@ -147,9 +145,9 @@ class Category
     /**
      * Get affiliates
      *
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getAffiliates() : ArrayCollection
+    public function getAffiliates() : Collection
     {
         return $this->affiliates;
     }

@@ -6,19 +6,28 @@ use AppBundle\Entity\Category;
 
 class CategoryModel
 {
-    /**
-     * @var Category
-     */
+    /** @var Category */
     protected $category;
 
-    /**
-     * @var
-     */
+    /** @var */
+    private $id;
+
+    /** @var */
+    private $name;
+
+    /** @var */
+    private $slug;
+
+    /** @var */
+    private $jobs;
+
+    /** @var */
+    private $affiliates;
+
+    /** @var */
     protected $activeJobs;
 
-    /**
-     * @var
-     */
+    /** @var */
     protected $moreJobs;
 
     /**
@@ -28,6 +37,86 @@ class CategoryModel
     public function __construct(Category $entity)
     {
         $this->category = $entity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     */
+    public function setSlug($slug): void
+    {
+        $this->slug = $slug;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getJobs()
+    {
+        return $this->jobs;
+    }
+
+    /**
+     * @param mixed $jobs
+     */
+    public function setJobs($jobs): void
+    {
+        $this->jobs = $jobs;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAffiliates()
+    {
+        return $this->affiliates;
+    }
+
+    /**
+     * @param mixed $affiliates
+     */
+    public function setAffiliates($affiliates): void
+    {
+        $this->affiliates = $affiliates;
     }
 
     /*public function setEntity(Category $entity)
@@ -59,27 +148,19 @@ class CategoryModel
         return $this->moreJobs;
     }
 
+    /**
+     * @param $jobs
+     */
     public function setActiveJobs($jobs)
     {
         $this->activeJobs = $jobs;
     }
 
+    /**
+     * @return mixed
+     */
     public function getActiveJobs()
     {
         return $this->activeJobs;
-    }
-
-    /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public function __call($name, $arguments)
-    {
-        $getter = "get" . ucfirst($name);
-        if (method_exists($this->category, $getter)) {
-            return $this->category->$getter();
-        }
-        return null;
     }
 }
