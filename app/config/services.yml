@@ -31,6 +31,7 @@ services:
 
     AppBundle\Services\CategoryService:
         class: 'AppBundle\Services\CategoryService'
+        public: true
         arguments:
             $maxJobsOnHomepage: '%max_jobs_on_homepage%'
 

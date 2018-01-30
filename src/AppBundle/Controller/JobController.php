@@ -21,20 +21,18 @@ class JobController extends Controller
     /**
      * @Route("/", name="job.index")
      *
-     * @param Request $request
-     * @param CategoryService $categoryService
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function indexAction(Request $request, CategoryService $categoryService)
+    public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
 
         $categories = $em->getRepository(Category::class)->getWithJobs();
 
         return $this->render('job/index.html.twig', [
-            'categories' => $categoryService->prepareCategoriesWithJobs($categories)
+            'categories' => $this->get(CategoryService::class)->prepareCategoriesWithJobs($categories)
         ]);
     }
 

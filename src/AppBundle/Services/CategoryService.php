@@ -30,7 +30,7 @@ class CategoryService
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function prepareCategoriesWithJobs($categories, $maxActiveJobs = null)
+    public function prepareCategoriesWithJobs($categories, $maxActiveJobs = null) : array
     {
         $categoriesModels = [];
         $jobRepository = $this->entityManager->getRepository(Job::class);

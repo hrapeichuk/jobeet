@@ -19,13 +19,4 @@ class CategoryRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    /**
-     * @param $slug
-     * @return null|object
-     */
-    public function findBySlug($slug)
-    {
-        return $this->findOneBy(['slug' => $slug]);
-    }
 }
