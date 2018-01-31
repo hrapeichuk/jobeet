@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Utils\Jobeet;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repositories\JobRepository")
@@ -170,11 +171,11 @@ class Job
     /**
      * Set logo
      *
-     * @param string $logo
+     * @param $logo
      *
      * @return self
      */
-    public function setLogo(?string $logo) : self
+    public function setLogo($logo) : self
     {
         $this->logo = $logo;
 
@@ -183,10 +184,8 @@ class Job
 
     /**
      * Get logo
-     *
-     * @return string
      */
-    public function getLogo() : ?string
+    public function getLogo()
     {
         return $this->logo;
     }
@@ -523,7 +522,7 @@ class Job
      *
      * @return Category
      */
-    public function getCategory() : Category
+    public function getCategory() : ?Category
     {
         return $this->category;
     }

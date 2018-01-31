@@ -38,6 +38,7 @@ class JobUploadListener
         }
 
         $fileName = $this->uploader->upload($file);
+
         $entity->setLogo($fileName);
     }
 }

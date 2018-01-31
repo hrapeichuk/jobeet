@@ -11,7 +11,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -47,20 +46,10 @@ class JobController extends Controller
     {
         $job = new Job();
         $job->setType(Job::TYPE_FULL_TIME);
-        $form = $this->createForm('AppBundle\Form\JobType', $job);
+        $form = $this->createForm(JobType::class, $job);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $file = $job->getLogo();
-            if ($file instanceof UploadedFile) {
-                $fileName = md5(uniqid()).'.'.$file->guessExtension();
-                $file->move(
-                    $this->getParameter('jobs_directory'),
-                    $fileName
-                );
-                $job->setLogo($fileName);
-            }
-
             $em = $this->getDoctrine()->getManager();
             $em->persist($job);
             $em->flush();
@@ -210,7 +199,7 @@ class JobController extends Controller
     private function createDeleteForm(Job $job)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('job.delete', array('token' => $job->getToken())))
+            ->setAction($this->generateUrl('job.delete', ['token' => $job->getToken()]))
             ->setMethod('DELETE')
             ->getForm();
     }
