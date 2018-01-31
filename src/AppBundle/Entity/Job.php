@@ -4,7 +4,6 @@ namespace AppBundle\Entity;
 
 use AppBundle\Utils\Jobeet;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repositories\JobRepository")
@@ -526,7 +525,6 @@ class Job
     {
         return $this->category;
     }
-
 
     public function getCompanySlug()
     {

@@ -23,12 +23,15 @@ class JobType extends AbstractType
                 ChoiceType::class,
                 [
                     'choices' => Job::TYPES,
+                    'choice_label' => function ($value) {
+                        return 'types.'.$value;
+                    },
                     'expanded' => true,
                     'constraints' => [new Length(['min' => 3])],
                 ]
             )
             ->add('company')
-            ->add('logo', FileType::class, ['required' => false, 'label' => 'Company logo'])
+            ->add('logo', FileType::class, ['required' => false, 'label' => 'Company logo', 'data_class' => null])
             ->add('url', null, ['required' => false])
             ->add('position')
             ->add('location')

@@ -20,6 +20,11 @@ class JobUploadListener
     public function prePersist(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
+
+        if (!$entity instanceof Job) {
+            return;
+        }
+
         $this->uploadFile($entity);
     }
 
