@@ -12,6 +12,15 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Job
 {
+    const TYPE_FULL_TIME = 'full-time';
+    const TYPE_PART_TIME = 'part-time';
+    const TYPE_FREELANCE = 'freelance';
+
+    const TYPES = [
+        self::TYPE_FULL_TIME,
+        self::TYPE_PART_TIME,
+    ];
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -489,6 +498,10 @@ class Job
         if (!$this->getExpiresAt()) {
             $this->expiresAt = (clone $this->createdAt)->modify('+ 30 days');
         }
+
+        if (!$this->getToken()) {
+            $this->token = sha1($this->getEmail().rand(11111, 99999));
+        }
     }
 
     /**
@@ -529,5 +542,23 @@ class Job
     public function getLocationSlug()
     {
         return Jobeet::slugify($this->getLocation());
+    }
+
+    // @TODO: Refactor
+    public function isExpired()
+    {
+        return $this->getDaysBeforeExpires() < 0;
+    }
+    public function expiresSoon()
+    {
+        return $this->getDaysBeforeExpires() < 5;
+    }
+    public function getDaysBeforeExpires()
+    {
+        return ceil(($this->getExpiresAt()->format('U') - time()) / 86400);
+    }
+    public function publish()
+    {
+        $this->setIsActivated(true);
     }
 }

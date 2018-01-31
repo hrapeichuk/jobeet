@@ -35,6 +35,17 @@ services:
         arguments:
             $maxJobsOnHomepage: '%max_jobs_on_homepage%'
 
+    AppBundle\Utils\FileUploader:
+        class: AppBundle\Utils\FileUploader
+        arguments: ['%jobs_directory%']
+
+    AppBundle\EventListeners\JobUploadListener:
+        class: AppBundle\EventListeners\JobUploadListener
+        arguments: ['@AppBundle\Utils\FileUploader']
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:
     #     arguments:

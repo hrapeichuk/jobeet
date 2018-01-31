@@ -10,6 +10,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if app.request.get('token') %}
+        {% include 'job/admin.html.twig' with {'job': job} %}
+    {% endif %}
     <div id="job">
         <h1>{{ job.company }}</h1>
         <h2>{{ job.location }}</h2>
@@ -40,7 +43,7 @@
         </div>
 
         <div style="padding: 20px 0">
-            <a href="{{ path('job.edit', { 'id': job.id }) }}">
+            <a href="{{ path('job.edit', { 'token': job.token }) }}">
                 Edit
             </a>
         </div>

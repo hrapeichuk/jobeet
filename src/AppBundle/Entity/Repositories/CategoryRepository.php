@@ -16,6 +16,8 @@ class CategoryRepository extends EntityRepository
             ->leftJoin('c.jobs', 'j')
             ->andWhere('j.expiresAt > :date')
             ->setParameter('date', new \DateTime())
+            ->andWhere('j.isActivated = :activated')
+            ->setParameter('activated', 1)
             ->getQuery()
             ->getResult();
     }
