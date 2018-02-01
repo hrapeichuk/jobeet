@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Utils\Jobeet;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repositories\CategoryRepository")
  * @ORM\Table(name="categories")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Category
 {
@@ -23,6 +25,11 @@ class Category
      * @ORM\Column(type="string", length=100)
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     */
+    private $slug;
 
     /**
      * @ORM\OneToMany(targetEntity="Job", mappedBy="category")
@@ -138,10 +145,40 @@ class Category
     /**
      * Get affiliates
      *
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getAffiliates() : ArrayCollection
+    public function getAffiliates() : Collection
     {
         return $this->affiliates;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        //$this->createdAt = new \DateTime();
+        //$this->updatedAt = new \DateTime();
+
+        $this->slug = Jobeet::slugify($this->getName());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     * @return self
+     */
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
     }
 }

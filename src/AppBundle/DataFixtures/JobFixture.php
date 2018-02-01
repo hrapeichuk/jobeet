@@ -24,7 +24,7 @@ class JobFixture extends Fixture
         $jobSensioLabs->setIsActivated(true);
         $jobSensioLabs->setToken('job_sensio_labs');
         $jobSensioLabs->setEmail('job@example.com');
-        $jobSensioLabs->setExpiresAt(new \DateTime('2017-10-10'));
+        $jobSensioLabs->setExpiresAt(new \DateTime());
 
         $jobExtremeSensio = new Job();
         $jobExtremeSensio->setCategory($em->merge($this->getReference('category-design')));
@@ -40,7 +40,7 @@ class JobFixture extends Fixture
         $jobExtremeSensio->setIsActivated(true);
         $jobExtremeSensio->setToken('job_extreme_sensio');
         $jobExtremeSensio->setEmail('job@example.com');
-        $jobExtremeSensio->setExpiresAt(new \DateTime('2017-10-10'));
+        $jobExtremeSensio->setExpiresAt(new \DateTime());
 
         $jobExpired = new Job();
         $jobExpired->setCategory($em->merge($this->getReference('category-programming')));

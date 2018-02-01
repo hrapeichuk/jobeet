@@ -13,10 +13,10 @@
                     <div class="feed">
                         <a href="">Feed</a>
                     </div>
-                    <h1>{{ category.name }}</h1>
+                    <h1><a href="{{ path('category.show', {'slug': category.slug}) }}">{{ category.name }}</a></h1>
                 </div>
                 <table class="jobs">
-                    {% for job in getActiveCategoryJobs(category) %}
+                    {% for job in category.activeJobs %}
                         <tr class="{{ cycle(['even', 'odd'], loop.index) }}">
                             <td class="location">{{ job.location }}</td>
                             <td class="position">
@@ -28,6 +28,12 @@
                         </tr>
                     {% endfor %}
                 </table>
+
+                {% if category.moreJobs %}
+                    <div class="more_jobs">
+                        and <a href="{{ path('category.show', { 'slug': category.slug }) }}">{{ category.moreJobs }}</a> more...
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
