@@ -19,6 +19,7 @@ class Job
     const TYPES = [
         self::TYPE_FULL_TIME,
         self::TYPE_PART_TIME,
+        self::TYPE_FREELANCE,
     ];
 
     /**
@@ -138,7 +139,7 @@ class Job
      *
      * @return string
      */
-    public function getType() : string
+    public function getType() : ?string
     {
         return $this->type;
     }
@@ -526,34 +527,59 @@ class Job
         return $this->category;
     }
 
+    /**
+     * @return null|string|string[]
+     */
     public function getCompanySlug()
     {
         return Jobeet::slugify($this->getCompany());
     }
 
+    /**
+     * @return null|string|string[]
+     */
     public function getPositionSlug()
     {
         return Jobeet::slugify($this->getPosition());
     }
 
+    /**
+     * @return null|string|string[]
+     */
     public function getLocationSlug()
     {
         return Jobeet::slugify($this->getLocation());
     }
 
     // @TODO: Refactor
+
+    /**
+     * @return bool
+     */
     public function isExpired()
     {
         return $this->getDaysBeforeExpires() < 0;
     }
+
+    /**
+     * @return bool
+     */
     public function expiresSoon()
     {
         return $this->getDaysBeforeExpires() < 5;
     }
+
+    /**
+     * @return float
+     */
     public function getDaysBeforeExpires()
     {
         return ceil(($this->getExpiresAt()->format('U') - time()) / 86400);
     }
+
+    /**
+     * Set is_activated flag to true
+     */
     public function publish()
     {
         $this->setIsActivated(true);

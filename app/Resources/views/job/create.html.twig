@@ -21,7 +21,7 @@
 
 {% block body %}
     <h1>Job creation</h1>
-    {{ form_start(form, {'action': path('job.create'), 'method': 'POST'}) }}
+    {{ form_start(form, {'action': path('job.store'), 'method': 'POST'}) }}
         <table id="job_form">
             <tbody>
             <tr>

@@ -34,6 +34,9 @@ class JobUploadListener
         $this->uploadFile($entity);
     }
 
+    /**
+     * @param Job $entity
+     */
     private function uploadFile(Job $entity)
     {
         $file = $entity->getLogo();

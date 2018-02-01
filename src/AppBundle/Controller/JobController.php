@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class JobController extends Controller
 {
     /**
-     * @Route("/", name="job.index")
+     * @Route("/", name="job.index", methods={"GET"})
      *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Doctrine\ORM\NoResultException
@@ -38,7 +38,8 @@ class JobController extends Controller
     }
 
     /**
-     * @Route("/new", name="job.create")
+     * @Route("/new", name="job.create", methods={"GET"})
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
@@ -49,19 +50,6 @@ class JobController extends Controller
         $form = $this->createForm(JobType::class, $job);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($job);
-            $em->flush();
-
-            return $this->redirectToRoute('job.preview', [
-                'token' => $job->getToken(),
-                'company' => $job->getCompanySlug(),
-                'location' => $job->getLocationSlug(),
-                'position' => $job->getPositionSlug()
-            ]);
-        }
-
         return $this->render('job/create.html.twig', [
             'job' => $job,
             'form' => $form->createView(),
@@ -69,34 +57,48 @@ class JobController extends Controller
     }
 
     /**
-     * @Route("/{token}/edit", name="job.edit")
+     * @Route("/", name="job.store", methods={"POST"})
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function storeAction(Request $request)
+    {
+        $job = new Job();
+        $form = $this->createForm(JobType::class, $job);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($job);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('job.preview', [
+            'token' => $job->getToken(),
+            'company' => $job->getCompanySlug(),
+            'location' => $job->getLocationSlug(),
+            'position' => $job->getPositionSlug()
+        ]);
+    }
+
+    /**
+     * @Route("/{token}/edit", name="job.edit", methods={"GET"})
+     *
      * @param Request $request
      * @param Job $job
-     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(Request $request, Job $job)
     {
-        if ($request->getMethod() != Request::METHOD_POST) {
-            if (is_file($this->getParameter('jobs_directory') . '/' . $job->getLogo())) {
-                $job->setLogo(new File($this->getParameter('jobs_directory') . '/' . $job->getLogo()));
-            }
+        if (is_file($this->getParameter('jobs_directory') . '/' . $job->getLogo())) {
+            $job->setLogo(new File($this->getParameter('jobs_directory') . '/' . $job->getLogo()));
         }
 
         $deleteForm = $this->createDeleteForm($job);
 
         $editForm = $this->createForm(JobType::class, $job);
         $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            return $this->redirectToRoute('job.preview', [
-                'token' => $job->getToken(),
-                'company' => $job->getCompanySlug(),
-                'location' => $job->getLocationSlug(),
-                'position' => $job->getPositionSlug()
-            ]);
-        }
 
         return $this->render('job/edit.html.twig', [
             'job' => $job,
@@ -106,7 +108,32 @@ class JobController extends Controller
     }
 
     /**
-     * @Route("/{token}/delete", name="job.delete")
+     * @Route("/{token}", name="job.update", methods={"PUT", "PATCH"})
+     *
+     * @param Request $request
+     * @param Job $job
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function updateAction(Request $request, Job $job)
+    {
+        $editForm = $this->createForm(JobType::class, $job, ['method' => 'PUT']);
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        return $this->redirectToRoute('job.preview', [
+            'token' => $job->getToken(),
+            'company' => $job->getCompanySlug(),
+            'location' => $job->getLocationSlug(),
+            'position' => $job->getPositionSlug()
+        ]);
+    }
+
+    /**
+     * @Route("/{token}", name="job.delete", methods={"DELETE"})
+     *
      * @param Request $request
      * @param Job $job
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -167,8 +194,8 @@ class JobController extends Controller
     /**
      * Publishes a job entity.
      *
-     * @Route("/{token}/publish", name="job.publish")
-     * @Method("POST")
+     * @Route("/{token}/publish", name="job.publish", methods={"PUT"})
+     *
      * @param Request $request
      * @param Job $job
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -177,13 +204,13 @@ class JobController extends Controller
     {
         $form = $this->createPublishForm($job);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $job->publish();
-            $em->persist($job);
-            $em->flush();
+            $this->getDoctrine()->getManager()->flush();
             $this->addFlash('notice', 'Your job is now online for 30 days.');
         }
+
         return $this->redirectToRoute('job.preview', [
             'token' => $job->getToken(),
             'company' => $job->getCompanySlug(),
@@ -215,7 +242,7 @@ class JobController extends Controller
     {
         return $this->createFormBuilder(['token' => $job->getToken()])
             ->add('token', HiddenType::class)
-            ->setMethod('POST')
+            ->setMethod('PUT')
             ->getForm();
     }
 }

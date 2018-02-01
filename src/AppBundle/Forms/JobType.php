@@ -51,6 +51,9 @@ class JobType extends AbstractType
         ));
     }
 
+    /**
+     * @return string
+     */
     public function getBlockPrefix()
     {
         return 'appbundle_job';

@@ -4,7 +4,7 @@
         {% if not job.isActivated %}
             <li><a href="{{ path('job.edit', { 'token': job.token }) }}">Edit</a></li>
             <li>
-                {{ form_start(publish_form, {'action': path('job.publish', { 'token': job.token }), 'method': 'POST'}) }}
+                {{ form_start(publish_form, {'action': path('job.publish', { 'token': job.token }), 'method': 'PUT'}) }}
                     {{ form_widget(publish_form) }}
                     <button type="submit">Publish</button>
                 {{ form_end(publish_form) }}
