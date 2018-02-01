@@ -24,6 +24,12 @@ class CategoryService
         $this->maxJobsOnHomepage = $maxJobsOnHomepage;
     }
 
+    public function createNewCategory(string $name)
+    {
+        $categoryRepository = $this->entityManager->getRepository(Category::class);
+        return $categoryRepository->create($name);
+    }
+
     /**
      * @param $categories
      * @param null $maxActiveJobs
