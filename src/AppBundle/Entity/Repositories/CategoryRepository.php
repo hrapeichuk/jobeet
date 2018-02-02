@@ -26,9 +26,7 @@ class CategoryRepository extends EntityRepository
     public function create(string $name)
     {
         $entityClass = $this->getEntityName();
-        /**
-         * @var Category $category
-         */
+        /** @var Category $category */
         $category = (new $entityClass);
         $category->setName($name);
 

@@ -11,22 +11,30 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class JobService
 {
+    /** @var EntityManagerInterface */
     protected $entityManager;
-    /**
-     * @var FileUploader
-     */
+
+    /** @var FileUploader */
     protected $fileUploader;
+
+    /** @var Filesystem */
     protected $fileSystem;
-    /**
-     * @var LoggerInterface
-     */
+
+    /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(EntityManagerInterface $em, FileUploader $fileUploader, LoggerInterface $logger)
+    /**
+     * JobService constructor.
+     * @param EntityManagerInterface $em
+     * @param FileUploader $fileUploader
+     * @param LoggerInterface $logger
+     * @param Filesystem $filesystem
+     */
+    public function __construct(EntityManagerInterface $em, FileUploader $fileUploader, LoggerInterface $logger, Filesystem $filesystem)
     {
         $this->entityManager = $em;
         $this->fileUploader = $fileUploader;
-        $this->fileSystem = new Filesystem();
+        $this->fileSystem = $filesystem;
         $this->logger = $logger;
     }
 
@@ -39,17 +47,19 @@ class JobService
         $repository = $em->getRepository(Job::class);
         $expiredJobs = $repository->getOldExpiredJobs();
 
-        $number = 0;
         foreach ($expiredJobs as $job) {
             $em->remove($job);
             $this->deleteJobImage($job);
-            $number++;
         }
         $em->flush();
 
-        return $number;
+        return count($expiredJobs);
     }
 
+    /**
+     * Deletes image of the job from the directory.
+     * @param Job $job
+     */
     public function deleteJobImage(Job $job)
     {
         $file = $this->fileUploader->getTargetDir()."/".$job->getLogo();
