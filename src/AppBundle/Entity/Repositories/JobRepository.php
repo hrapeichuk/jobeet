@@ -90,4 +90,17 @@ class JobRepository extends EntityRepository
 
         return $job;
     }
+
+    /**
+     * Get all expired jobs which have been expired more than 6 months ago.
+     * @return array
+     */
+    public function getOldExpiredJobs()
+    {
+        return $this->createQueryBuilder('j')
+            ->where('j.expiresAt < :date')
+            ->setParameter('date', (new \DateTime)->modify("-6 months"))
+            ->getQuery()
+            ->getResult();
+    }
 }
