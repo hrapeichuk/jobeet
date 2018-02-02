@@ -44,7 +44,13 @@ class CategoryAddCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->categoryService->createNewCategory($input->getArgument('name'));
-        $output->writeln("<info>Category successfully created.</info>");
+        try {
+            $this->categoryService->createNewCategory($input->getArgument('name'));
+
+            $output->writeln("<info>Category successfully created.</info>");
+        } catch (\Exception $e) {
+            $output->writeln("<error>Something went wrong while saving new category.</error>");
+            $output->writeln($e->getMessage());
+        }
     }
 }
