@@ -17,7 +17,8 @@
             "Migrations\\": "migrations/"
         },
         "files": [
-            "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
+            "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php",
+            "app/Resources/functions/helpers.php"
         ]
     },
     "require": {
