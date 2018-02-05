@@ -103,4 +103,19 @@ class JobRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param $days
+     * @return mixed
+     */
+    public function cleanup($days)
+    {
+        $query = $this->createQueryBuilder('j')
+            ->delete()
+            ->where('j.isActivated IS NULL')
+            ->andWhere('j.createdAt < :created_at')
+            ->setParameter('created_at',  (new \DateTime())->modify("-$days days"))
+            ->getQuery();
+        return $query->execute();
+    }
 }
