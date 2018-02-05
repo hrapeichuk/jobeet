@@ -122,12 +122,12 @@ class JobRepository extends EntityRepository
 
     /**
      * @param Job $job
-     * @return Job|bool
+     * @return Job
      */
     public function extend(Job $job)
     {
         if (!$job->expiresSoon()) {
-            return false;
+            throw new \InvalidArgumentException('Can\'t extend expired job.');
         }
         $job->setExpiresAt((new \DateTime())->modify('+30 days'));
         return $job;

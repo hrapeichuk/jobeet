@@ -21,11 +21,15 @@ class JobAdminController extends Controller
         $selectedModels = $selectedModelQuery->execute();
 
         try {
-            foreach ($selectedModels as $selectedModel) {
-                $selectedModel = $em->getRepository(Job::class)->extend($selectedModel);
-                if ($selectedModel !== false) {
+            $repo = $em->getRepository(Job::class);
+            $failed = 0;
+            try {
+                foreach ($selectedModels as $selectedModel) {
+                    $selectedModel = $repo->extend($selectedModel);
                     $modelManager->update($selectedModel);
                 }
+            } catch (\Exception $e) {
+                $failed++;
             }
         } catch (\Exception $e) {
             $this->addFlash('sonata_flash_error', $e->getMessage());
@@ -33,7 +37,12 @@ class JobAdminController extends Controller
             return new RedirectResponse($this->admin->generateUrl('list',$this->admin->getFilterParameters()));
         }
 
-        $this->addFlash('sonata_flash_success',  sprintf('The selected jobs validity has been extended until %s.', date('m/d/Y', time() + 86400 * 30)));
+        $this->addFlash('sonata_flash_success', sprintf(
+            '%d of %d selected jobs validity has been extended until %s.',
+            count($selectedModels) - $failed,
+            count($selectedModels),
+            date('m/d/Y', time() + 86400 * 30))
+        );
 
         return new RedirectResponse($this->admin->generateUrl('list',$this->admin->getFilterParameters()));
     }
