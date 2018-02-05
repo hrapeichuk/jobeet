@@ -91,6 +91,10 @@ class JobController extends Controller
      */
     public function editAction(Request $request, Job $job)
     {
+        if ($job->getIsActivated()) {
+            throw $this->createNotFoundException('Job is activated and cannot be edited.');
+        }
+
         if (is_file($this->getParameter('jobs_directory') . '/' . $job->getLogo())) {
             $job->setLogo(new File($this->getParameter('jobs_directory') . '/' . $job->getLogo()));
         }

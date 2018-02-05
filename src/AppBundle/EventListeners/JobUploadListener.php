@@ -31,6 +31,11 @@ class JobUploadListener
     public function preUpdate(PreUpdateEventArgs $args)
     {
         $entity = $args->getEntity();
+
+        if (!$entity instanceof Job) {
+            return;
+        }
+
         $this->uploadFile($entity);
     }
 

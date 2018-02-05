@@ -551,8 +551,6 @@ class Job
         return Jobeet::slugify($this->getLocation());
     }
 
-    // @TODO: Refactor
-
     /**
      * @return bool
      */

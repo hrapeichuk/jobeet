@@ -103,4 +103,33 @@ class JobRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Delete all non activated and old created ($days ago) jobs.
+     * @param $days
+     * @return mixed
+     */
+    public function cleanup(int $days)
+    {
+        $query = $this->createQueryBuilder('j')
+            ->delete()
+            ->where('j.isActivated IS NULL')
+            ->andWhere('j.createdAt < :created_at')
+            ->setParameter('created_at',  (new \DateTime())->modify(sprintf('-%d days', $days)))
+            ->getQuery();
+        return $query->execute();
+    }
+
+    /**
+     * @param Job $job
+     * @return Job
+     */
+    public function extend(Job $job)
+    {
+        if (!$job->expiresSoon()) {
+            throw new \InvalidArgumentException('Can\'t extend expired job.');
+        }
+        $job->setExpiresAt((new \DateTime())->modify('+30 days'));
+        return $job;
+    }
 }
