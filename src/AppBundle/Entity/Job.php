@@ -584,13 +584,4 @@ class Job
     {
         $this->setIsActivated(true);
     }
-
-    public function extend()
-    {
-        if (!$this->expiresSoon()) {
-            return false;
-        }
-        $this->expiresAt = (new \DateTime())->modify('+30 days');
-        return true;
-    }
 }

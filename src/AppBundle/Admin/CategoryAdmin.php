@@ -15,6 +15,9 @@ class CategoryAdmin extends AbstractAdmin
         '_sort_by' => 'name'
     ];
 
+    /**
+     * @param FormMapper $formMapper
+     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
@@ -22,11 +25,17 @@ class CategoryAdmin extends AbstractAdmin
             ->add('slug');
     }
 
+    /**
+     * @param DatagridMapper $datagridMapper
+     */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper->add('name');
     }
 
+    /**
+     * @param ListMapper $listMapper
+     */
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper

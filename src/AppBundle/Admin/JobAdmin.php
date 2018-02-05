@@ -17,11 +17,17 @@ use Symfony\Component\Validator\Constraints\Length;
 class JobAdmin extends AbstractAdmin
 {
     // setup the defaut sort column and order
+    /**
+     * @var array
+     */
     protected $datagridValues = [
         '_sort_order' => 'DESC',
         '_sort_by' => 'expiresAt'
     ];
 
+    /**
+     * @param FormMapper $formMapper
+     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
@@ -49,6 +55,9 @@ class JobAdmin extends AbstractAdmin
             ->add('email');
     }
 
+    /**
+     * @param DatagridMapper $datagridMapper
+     */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
@@ -65,6 +74,9 @@ class JobAdmin extends AbstractAdmin
             ->add('expiresAt');
     }
 
+    /**
+     * @param ListMapper $listMapper
+     */
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
@@ -85,6 +97,9 @@ class JobAdmin extends AbstractAdmin
             ]);
     }
 
+    /**
+     * @param ShowMapper $showMapper
+     */
     protected function configureShowField(ShowMapper $showMapper)
     {
         $showMapper
@@ -104,6 +119,9 @@ class JobAdmin extends AbstractAdmin
             ->add('expiresAt');
     }
 
+    /**
+     * @return array
+     */
     public function getBatchActions()
     {
         // retrieve the default (currently only the delete action) actions

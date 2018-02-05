@@ -12,19 +12,20 @@ class JobAdminController extends Controller
 {
     public function batchActionExtend(ProxyQueryInterface $selectedModelQuery)
     {
-        if ($this->admin->isGranted('EDIT') === false || $this->admin->isGranted('DELETE') === false)
-        {
+        if ($this->admin->isGranted('EDIT') === false || $this->admin->isGranted('DELETE') === false) {
             throw new AccessDeniedException();
         }
 
         $modelManager = $this->admin->getModelManager();
-
+        $em = $this->getDoctrine()->getManager();
         $selectedModels = $selectedModelQuery->execute();
 
         try {
             foreach ($selectedModels as $selectedModel) {
-                $selectedModel->extend();
-                $modelManager->update($selectedModel);
+                $selectedModel = $em->getRepository(Job::class)->extend($selectedModel);
+                if ($selectedModel !== false) {
+                    $modelManager->update($selectedModel);
+                }
             }
         } catch (\Exception $e) {
             $this->addFlash('sonata_flash_error', $e->getMessage());
