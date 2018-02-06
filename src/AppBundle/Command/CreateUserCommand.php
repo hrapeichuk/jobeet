@@ -3,6 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\User;
+use AppBundle\Services\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,23 +13,21 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class CreateUserCommand extends Command
 {
-    /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
-    /**
-     * @var UserPasswordEncoderInterface
-     */
+    /** @var UserPasswordEncoderInterface */
     private $encoder;
+    /** @var UserService */
+    private $userService;
 
     /**
      * CategoryCommand constructor.
      * @param $name
-     * @param EntityManagerInterface $em
-     * @param UserPasswordEncoderInterface $userPasswordEncoder
+     * @param UserService $us
+     * @param UserPasswordEncoderInterface $encoder
      */
-    public function __construct($name = null, EntityManagerInterface $em, UserPasswordEncoderInterface $userPasswordEncoder)
+    public function __construct($name = null, UserService $us, UserPasswordEncoderInterface $encoder)
     {
-        $this->entityManager = $em;
-        $this->encoder = $userPasswordEncoder;
+        $this->encoder = $encoder;
+        $this->userService = $us;
         parent::__construct($name);
     }
 
@@ -54,10 +53,10 @@ class CreateUserCommand extends Command
         try {
             $attributes = [
                 'username' => $input->getArgument('username'),
-                'password' => $this->encoder->encodePassword(new User, $input->getArgument('password')),
+                'password' => $input->getArgument('password'),
             ];
 
-            $user = $this->entityManager->getRepository(User::class)->create($attributes);
+            $user = $this->userService->createNewUser($attributes);
 
             $output->writeln("<info>User successfully created (id = {$user->getId()}).</info>");
         } catch (\Exception $e) {

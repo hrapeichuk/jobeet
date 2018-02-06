@@ -10,11 +10,6 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserRepository extends EntityRepository
 {
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encoder;
-
     public function __construct(EntityManager $em, Mapping\ClassMetadata $class)
     {
         parent::__construct($em, $class);
