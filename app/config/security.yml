@@ -1,11 +1,26 @@
 # To get started with security, check out the documentation:
 # https://symfony.com/doc/current/security.html
 security:
+    encoders:
+        #Symfony\Component\Security\Core\User\User:
+        #    algorithm: bcrypt
+        #    cost: 12
+        AppBundle\Entity\User: sha512
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        in_memory:
-            memory: ~
+        #in_memory:
+        #    memory:
+        #        users:
+        #            ryan:
+        #                password: $2y$12$T7rPlh4E.qjS5mmaRkrtX.nik97SP8HpPfbGBwFdNi7YuYH9L.oRm
+        #                roles: 'ROLE_USER'
+        #            admin:
+        #                password: $2y$12$3F9ID5YeArpBpW7agSHyJ.9w8wDfets3ZqxOpVzQiHEp3QI5PgGyq
+        #                roles: 'ROLE_ADMIN'
+
+        main:
+            entity: { class: AppBundle\Entity\User, property: username }
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -14,7 +29,14 @@ security:
             security: false
 
         main:
+            pattern:    ^/
             anonymous: ~
+            form_login:
+                login_path: /login
+                check_path: /login_check
+            logout:
+                path:   /logout
+                target: /
             # activate different ways to authenticate
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
@@ -22,3 +44,10 @@ security:
 
             # https://symfony.com/doc/current/security/form_login_setup.html
             #form_login: ~
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_SONATA_ADMIN
+
+    access_control:
+        # require ROLE_ADMIN for /admin*
+        - { path: ^/admin, roles: ROLE_ADMIN }
