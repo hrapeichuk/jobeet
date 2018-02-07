@@ -30,10 +30,15 @@ services:
         tags: ['controller.service_arguments']
 
     AppBundle\Services\CategoryService:
-        class: 'AppBundle\Services\CategoryService'
+        class: AppBundle\Services\CategoryService
         public: true
         arguments:
             $maxJobsOnHomepage: '%max_jobs_on_homepage%'
+
+#    AppBundle\Entity\Repositories\UserRepository:
+#        class: AppBundle\Entity\Repositories\UserRepository
+#        autowire: false
+#        arguments: ['@doctrine.orm.default_entity_manager', 'Doctrine\ORM\Mapping\ClassMetadata', 'Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface']
 
     AppBundle\Utils\FileUploader:
         class: AppBundle\Utils\FileUploader

@@ -157,15 +157,27 @@ class JobController extends Controller
     }
 
     /**
-     * @Route("/{company}/{location}/{id}/{position}", name="job.show", requirements={"id" = "\d+"})
+     * @Route("/{company}/{location}/{id}/{position}", name="job.show", requirements={"id"="\d+"})
      * @ParamConverter("job", options={"repository_method" = "getActiveJob"})
      * @Method("GET")
      *
      * @param Job $job
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Job $job)
+    public function showAction(Job $job, Request $request)
     {
+        $session = $request->getSession();
+        $jobsHistory = $session->get('jobs_history', []);
+
+        $jobForHistory = $this->prepareJobAttributesForHistory($job);
+        if (!in_array($jobForHistory, $jobsHistory)) {
+            $newJobsHistory = [];
+            $newJobsHistory[] = $jobForHistory;
+            $jobsHistory = array_merge($newJobsHistory, array_slice($jobsHistory, 0, 2));
+            $session->set('jobs_history', $jobsHistory);
+        }
+
         $deleteForm = $this->createDeleteForm($job);
 
         return $this->render('job/show.html.twig', [
@@ -177,7 +189,7 @@ class JobController extends Controller
     /**
      * Finds and displays the preview page for a job entity.
      *
-     * @Route("/{company}/{location}/{token}/{position}", name="job.preview", requirements={"token" = "\w+"})
+     * @Route("/{company}/{location}/{token}/{position}", name="job.preview", requirements={"token"="\w+"})
      * @ParamConverter("job", options={"exclude": {"company", "location", "position"}})
      * @Method("GET")
      * @param Job $job
@@ -248,5 +260,17 @@ class JobController extends Controller
             ->add('token', HiddenType::class)
             ->setMethod('PUT')
             ->getForm();
+    }
+
+    public function prepareJobAttributesForHistory(Job $job)
+    {
+        return [
+            'id' => $job->getId(),
+            'position' => $job->getPosition(),
+            'company' => $job->getCompany(),
+            'companySlug' => $job->getCompanySlug(),
+            'locationSlug' => $job->getLocationSlug(),
+            'positionSlug' => $job->getPositionSlug(),
+        ];
     }
 }
