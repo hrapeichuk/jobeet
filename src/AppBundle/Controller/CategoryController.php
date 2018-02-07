@@ -43,7 +43,6 @@ class CategoryController extends Controller
      * @param Category $category
      * @param CategoryService $categoryService
      * @return Response
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showAction($slug, $page, Category $category, CategoryService $categoryService) : Response
