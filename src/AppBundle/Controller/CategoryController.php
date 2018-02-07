@@ -4,14 +4,15 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
+use AppBundle\Services\CategoryService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class JobController
- *
  * @Route("category")
  */
 class CategoryController extends Controller
@@ -34,21 +35,20 @@ class CategoryController extends Controller
     }*/
 
     /**
-     * @Route("/{slug}/{page}", defaults={"page": 1}, name="category.show")
+     * @Route("/{slug}/{page}", defaults={"page": 1}, name="category.show", requirements={"page"="\d+"})
      * @Method("GET")
-     *
+     * @ParamConverter("job", options={"repository_method" = "findBySlug"})
      * @param string $slug
      * @param $page
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Category $category
+     * @param CategoryService $categoryService
+     * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function showAction($slug, $page)
+    public function showAction($slug, $page, Category $category, CategoryService $categoryService) : Response
     {
         $em = $this->getDoctrine()->getManager();
-
-        $category = $em->getRepository(Category::class)->findOneBy(['slug' => $slug]);
-        if (!$category) {
-            throw $this->createNotFoundException('Unable to find Category entity.');
-        }
 
         $totalJobs = $em->getRepository(Job::class)->countActiveJobs($category->getId());
         $jobsPerPage = $this->container->getParameter('max_jobs_on_category');
@@ -56,9 +56,13 @@ class CategoryController extends Controller
         $previousPage = $page > 1 ? $page - 1 : 1;
         $nextPage = $page < $lastPage ? $page + 1 : $lastPage;
 
+        $categoryModel = $categoryService->getCategoryModel($category);
+        $activeJobs = $em->getRepository(Job::class)->getActiveJobs($category->getId(), $jobsPerPage, ($page - 1) * $jobsPerPage);
+        $categoryModel->setActiveJobs($activeJobs);
+
         return $this->render('category/show.html.twig', [
-            'category' => $category,
-            'jobsPerPage' => $jobsPerPage,
+            'category' => $categoryModel,
+
             'lastPage' => $lastPage,
             'previousPage' => $previousPage,
             'currentPage' => $page,

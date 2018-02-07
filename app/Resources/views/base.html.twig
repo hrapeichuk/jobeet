@@ -26,7 +26,7 @@
                 <div class="post">
                     <h2>Ask for people</h2>
                     <div>
-                        <a href="{{ path('job.index') }}">Post a Job</a>
+                        <a href="{{ path('job.create') }}">Post a Job</a>
                     </div>
                 </div>
 
@@ -42,6 +42,17 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="job_history">
+        Recent viewed jobs:
+        <ul>
+            {% for job in app.session.get('jobs_history') %}
+                <li>
+                    <a href="{{ path('job.show', { 'id': job.id, 'company': job.companySlug, 'location': job.locationSlug, 'position': job.positionSlug }) }}">{{ job.position }} - {{ job.company }}</a>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 
     <div id="content">

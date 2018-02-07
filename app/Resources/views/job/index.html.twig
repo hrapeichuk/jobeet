@@ -16,7 +16,7 @@
                     <h1><a href="{{ path('category.show', {'slug': category.slug}) }}">{{ category.name }}</a></h1>
                 </div>
                 <table class="jobs">
-                    {% for job in getActiveCategoryJobs(category) %}
+                    {% for job in category.activeJobs %}
                         <tr class="{{ cycle(['even', 'odd'], loop.index) }}">
                             <td class="location">{{ job.location }}</td>
                             <td class="position">

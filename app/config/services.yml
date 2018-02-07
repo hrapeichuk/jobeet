@@ -20,7 +20,7 @@ services:
         resource: '../../src/AppBundle/*'
         # you can exclude directories or files
         # but if a service is unused, it's removed anyway
-        exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
+        exclude: '../../src/AppBundle/{Entity,Repository,Tests,Twig}'
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
@@ -29,10 +29,42 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
-    AppBundle\Twig\AppExtension:
-        class: 'AppBundle\Twig\AppExtension'
+    AppBundle\Services\CategoryService:
+        class: AppBundle\Services\CategoryService
+        public: true
         arguments:
             $maxJobsOnHomepage: '%max_jobs_on_homepage%'
+
+#    AppBundle\Entity\Repositories\UserRepository:
+#        class: AppBundle\Entity\Repositories\UserRepository
+#        autowire: false
+#        arguments: ['@doctrine.orm.default_entity_manager', 'Doctrine\ORM\Mapping\ClassMetadata', 'Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface']
+
+    AppBundle\Utils\FileUploader:
+        class: AppBundle\Utils\FileUploader
+        arguments: ['%jobs_directory%']
+
+    AppBundle\EventListeners\JobUploadListener:
+        class: AppBundle\EventListeners\JobUploadListener
+        arguments: ['@AppBundle\Utils\FileUploader']
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+
+    app.admin.category:
+        class: AppBundle\Admin\CategoryAdmin
+        arguments: [~, AppBundle\Entity\Category, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Jobeet, label: Categories }
+        public: true
+
+
+    app.admin.job:
+        class: AppBundle\Admin\JobAdmin
+        arguments: [~, AppBundle\Entity\Job, AppBundle\Controller\JobAdminController]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Jobeet, label: Jobs }
+        public: true
 
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:

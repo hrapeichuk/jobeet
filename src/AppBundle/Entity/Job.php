@@ -12,6 +12,16 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Job
 {
+    const TYPE_FULL_TIME = 'full-time';
+    const TYPE_PART_TIME = 'part-time';
+    const TYPE_FREELANCE = 'freelance';
+
+    const TYPES = [
+        self::TYPE_FULL_TIME,
+        self::TYPE_PART_TIME,
+        self::TYPE_FREELANCE,
+    ];
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -129,7 +139,7 @@ class Job
      *
      * @return string
      */
-    public function getType() : string
+    public function getType() : ?string
     {
         return $this->type;
     }
@@ -161,11 +171,11 @@ class Job
     /**
      * Set logo
      *
-     * @param string $logo
+     * @param $logo
      *
      * @return self
      */
-    public function setLogo(?string $logo) : self
+    public function setLogo($logo) : self
     {
         $this->logo = $logo;
 
@@ -174,10 +184,8 @@ class Job
 
     /**
      * Get logo
-     *
-     * @return string
      */
-    public function getLogo() : ?string
+    public function getLogo()
     {
         return $this->logo;
     }
@@ -489,6 +497,10 @@ class Job
         if (!$this->getExpiresAt()) {
             $this->expiresAt = (clone $this->createdAt)->modify('+ 30 days');
         }
+
+        if (!$this->getToken()) {
+            $this->token = sha1($this->getEmail().rand(11111, 99999));
+        }
     }
 
     /**
@@ -510,24 +522,64 @@ class Job
      *
      * @return Category
      */
-    public function getCategory() : Category
+    public function getCategory() : ?Category
     {
         return $this->category;
     }
 
-
+    /**
+     * @return null|string|string[]
+     */
     public function getCompanySlug()
     {
         return Jobeet::slugify($this->getCompany());
     }
 
+    /**
+     * @return null|string|string[]
+     */
     public function getPositionSlug()
     {
         return Jobeet::slugify($this->getPosition());
     }
 
+    /**
+     * @return null|string|string[]
+     */
     public function getLocationSlug()
     {
         return Jobeet::slugify($this->getLocation());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpired()
+    {
+        return $this->getDaysBeforeExpires() < 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function expiresSoon()
+    {
+        return $this->getDaysBeforeExpires() < 5;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDaysBeforeExpires()
+    {
+        return ceil(($this->getExpiresAt()->format('U') - time()) / 86400);
+    }
+
+    /**
+     * Set is_activated flag to true
+     */
+    public function publish()
+    {
+        $this->setIsActivated(true);
     }
 }
