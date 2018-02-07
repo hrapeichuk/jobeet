@@ -2,9 +2,7 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\User;
 use AppBundle\Services\UserService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,6 +13,7 @@ class CreateUserCommand extends Command
 {
     /** @var UserPasswordEncoderInterface */
     private $encoder;
+
     /** @var UserService */
     private $userService;
 

@@ -32,6 +32,7 @@ security:
             pattern:    ^/
             anonymous: ~
             form_login:
+                csrf_token_generator: security.csrf.token_manager
                 login_path: /login
                 check_path: /login_check
             logout:

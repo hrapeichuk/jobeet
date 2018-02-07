@@ -3,18 +3,10 @@
 namespace AppBundle\Entity\Repositories;
 
 use AppBundle\Entity\User;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserRepository extends EntityRepository
 {
-    public function __construct(EntityManager $em, Mapping\ClassMetadata $class)
-    {
-        parent::__construct($em, $class);
-    }
-
     /**
      * @param array $attributes, where key = field name, value = field value
      * @return User

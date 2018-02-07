@@ -45,7 +45,7 @@ class User implements UserInterface
      *
      * @return self
      */
-    public function setUsername(?string $username) : self
+    public function setUsername(string $username) : self
     {
         $this->username = $username;
 
@@ -69,7 +69,7 @@ class User implements UserInterface
      *
      * @return self
      */
-    public function setPassword(?string $password) : self
+    public function setPassword(string $password) : self
     {
         $this->password = $password;
 
