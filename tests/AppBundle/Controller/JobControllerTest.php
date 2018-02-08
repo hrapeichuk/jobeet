@@ -2,20 +2,41 @@
 
 namespace Tests\AppBundle\Controller;
 
-use AppBundle\AppBundle;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Doctrine\ORM\Tools\SchemaTool;
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 class JobControllerTest extends WebTestCase
 {
+    public function setUp()
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        if (!isset($metadatas)) {
+            $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        }
+        $schemaTool = new SchemaTool($em);
+        $schemaTool->dropDatabase();
+        if (!empty($metadatas)) {
+            $schemaTool->createSchema($metadatas);
+        }
+        $this->postFixtureSetup();
+
+        $fixtures = [
+            \AppBundle\DataFixtures\CategoryFixture::class,
+            \AppBundle\DataFixtures\JobFixture::class
+        ];
+        $this->loadFixtures($fixtures);
+    }
+
+    /**
+     * Test job index page and see the job.
+     */
     public function testIndex()
     {
-        $kernel = static::bootKernel();
-
-        $max_jobs_on_homepage = $kernel->getContainer()->getParameter('max_jobs_on_homepage');
-
         $client = static::createClient();
+        $max_jobs_on_homepage = static::$kernel->getContainer()->getParameter('max_jobs_on_homepage');
+
         $crawler = $client->request('GET', '/');
-        $this->assertEquals('AppBundle\Controller\JobController::indexAction', $client->getRequest()->attributes->get('_controller'));
+
         $this->assertCount(0, $crawler->filter('.jobs td.position:contains("Expired")'));
 
         $this->assertTrue($crawler->filter('.category_programming tr')->count() <= $max_jobs_on_homepage);
@@ -32,16 +53,29 @@ class JobControllerTest extends WebTestCase
         $this->assertEquals($job->getLocationSlug(), $client->getRequest()->attributes->get('location'));
         $this->assertEquals($job->getPositionSlug(), $client->getRequest()->attributes->get('position'));
         $this->assertEquals($job->getId(), $client->getRequest()->attributes->get('id'));
+    }
+
+    /**
+     * Test nonexisting routes to job.
+     */
+    public function testShow()
+    {
+        $client = static::createClient();
 
         // a non-existent job forwards the user to a 404
         $crawler = $client->request('GET', '/job/foo-inc/milano-italy/0/painter');
-        $this->assertTrue(404 === $client->getResponse()->getStatusCode());
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
 
         // an expired job page forwards the user to a 404
         $crawler = $client->request('GET', sprintf('/job/sensio-labs/paris-france/%d/web-developer', $this->getExpiredJob()->getId()));
-        $this->assertTrue(404 === $client->getResponse()->getStatusCode());
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     protected function getMostRecentProgrammingJob()
     {
         $kernel = static::bootKernel();
@@ -61,6 +95,10 @@ class JobControllerTest extends WebTestCase
         return $query->getQuery()->getSingleResult();
     }
 
+    /**
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     protected function getExpiredJob()
     {
         $kernel = static::bootKernel();
