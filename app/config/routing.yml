@@ -13,7 +13,6 @@ _sonata_admin:
 
 index:
     path: /
-#    defaults: { _controller: AppBundle\Controller\JobController::indexAction }
     defaults: { _controller: AppBundle:Job:index }
 
 login:

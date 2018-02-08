@@ -6,8 +6,8 @@ use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
 use AppBundle\Forms\JobType;
 use AppBundle\Services\CategoryService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\File\File;
@@ -158,7 +158,7 @@ class JobController extends Controller
 
     /**
      * @Route("/{company}/{location}/{id}/{position}", name="job.show", requirements={"id"="\d+"})
-     * @ParamConverter("job", options={"repository_method" = "getActiveJob"})
+     * @Entity("job", expr="repository.getActiveJob(id)")
      * @Method("GET")
      *
      * @param Job $job
@@ -190,7 +190,7 @@ class JobController extends Controller
      * Finds and displays the preview page for a job entity.
      *
      * @Route("/{company}/{location}/{token}/{position}", name="job.preview", requirements={"token"="\w+"})
-     * @ParamConverter("job", options={"exclude": {"company", "location", "position"}})
+     * @Entity("job", expr="repository.findOneByToken(token)")
      * @Method("GET")
      * @param Job $job
      * @return \Symfony\Component\HttpFoundation\Response
