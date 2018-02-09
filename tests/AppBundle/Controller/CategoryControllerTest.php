@@ -4,23 +4,24 @@ namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
-use Doctrine\ORM\Tools\SchemaTool;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\AppBundle\AppTestTrait;
 
 class CategoryControllerTest extends WebTestCase
 {
+    use AppTestTrait;
+
+    /** @var \Doctrine\ORM\EntityManager */
+    private $em;
+
     public function setUp()
     {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        if (!isset($metadatas)) {
-            $metadatas = $em->getMetadataFactory()->getAllMetadata();
-        }
-        $schemaTool = new SchemaTool($em);
-        $schemaTool->dropDatabase();
-        if (!empty($metadatas)) {
-            $schemaTool->createSchema($metadatas);
-        }
-        $this->postFixtureSetup();
+        $kernel = self::bootKernel();
+        $this->em = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $this->refreshDatabaseSchema();
 
         $fixtures = [
             \AppBundle\DataFixtures\CategoryFixture::class,
@@ -41,7 +42,7 @@ class CategoryControllerTest extends WebTestCase
         $link = $crawler->selectLink('Programming')->link();
         $crawler = $client->click($link);
         $this->assertEquals('AppBundle\Controller\CategoryController::showAction', $client->getRequest()->attributes->get('_controller'));
-        $this->assertTrue(200 === $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // categories with more than $max_jobs_on_homepage jobs also have a "more" link
         $crawler = $client->request('GET', '/');

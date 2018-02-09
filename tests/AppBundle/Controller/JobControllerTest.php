@@ -2,37 +2,32 @@
 
 namespace Tests\AppBundle\Controller;
 
-use Doctrine\ORM\Tools\SchemaTool;
+use AppBundle\Entity\Category;
+use AppBundle\Entity\Job;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\AppBundle\AppTestTrait;
 
 class JobControllerTest extends WebTestCase
 {
+    use AppTestTrait;
+
     /** @var \Doctrine\ORM\EntityManager */
     private $em;
 
     public function setUp()
     {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        if (!isset($metadatas)) {
-            $metadatas = $em->getMetadataFactory()->getAllMetadata();
-        }
-        $schemaTool = new SchemaTool($em);
-        $schemaTool->dropDatabase();
-        if (!empty($metadatas)) {
-            $schemaTool->createSchema($metadatas);
-        }
-        $this->postFixtureSetup();
+        $kernel = self::bootKernel();
+        $this->em = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $this->refreshDatabaseSchema();
 
         $fixtures = [
             \AppBundle\DataFixtures\CategoryFixture::class,
             \AppBundle\DataFixtures\JobFixture::class
         ];
         $this->loadFixtures($fixtures);
-
-        $kernel = self::bootKernel();
-        $this->em = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager();
     }
 
     /**
@@ -75,16 +70,23 @@ class JobControllerTest extends WebTestCase
     }
 
     /**
-     * Test nonexisting routes to job.
+     * Test checks that non existing job should return 404 page.
      */
-    public function testShow()
+    public function testShowWithNonExistingJob()
     {
         $client = static::createClient();
-
         // a non-existent job forwards the user to a 404
         $crawler = $client->request('GET', '/job/foo-inc/milano-italy/0/painter');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
 
+    /**
+     * Test checks if expired job returns 404 page.
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function testShowWithExpiredJob()
+    {
+        $client = static::createClient();
         // an expired job page forwards the user to a 404
         $crawler = $client->request('GET', sprintf('/job/sensio-labs/paris-france/%d/web-developer', $this->getExpiredJob()->getId()));
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
@@ -118,7 +120,7 @@ class JobControllerTest extends WebTestCase
 
         $job = $this->em->createQueryBuilder()
             ->select('j')
-            ->from(\AppBundle\Entity\Job::class, 'j')
+            ->from(Job::class, 'j')
             ->where('j.email = :email')
             ->andWhere('j.isActivated IS NULL')
             ->andWhere('j.isPublic = :isPublic')
@@ -168,8 +170,8 @@ class JobControllerTest extends WebTestCase
         //$query = $em->createQuery('SELECT j from AppBundle:Job j LEFT JOIN j.category c WHERE c.slug = :slug AND j.expiresAt > :date ORDER BY j.createdAt DESC');
         $query = $this->em->createQueryBuilder()
             ->select('j')
-            ->from(\AppBundle\Entity\Job::class, 'j')
-            ->join(\AppBundle\Entity\Category::class, 'c');
+            ->from(Job::class, 'j')
+            ->join(Category::class, 'c');
         $query->where('j.expiresAt > :date');
         $query->setParameter('date', new \DateTime());
         $query->andWhere('c.slug = :slug');

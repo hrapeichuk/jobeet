@@ -18,12 +18,6 @@ swiftmailer:
 liip_functional_test: ~
 
 # Doctrine Configuration
-# Doctrine Configuration
 doctrine:
     dbal:
-        driver: pdo_mysql
-        host: '%database_host%'
-        port: '%database_port%'
         dbname: 'test_%database_name%'
-        user: '%database_user%'
-        password: '%database_password%'
