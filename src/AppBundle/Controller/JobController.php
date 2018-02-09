@@ -60,7 +60,7 @@ class JobController extends Controller
      * @Route("/", name="job.store", methods={"POST"})
      *
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function storeAction(Request $request)
     {
@@ -72,6 +72,12 @@ class JobController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($job);
             $em->flush();
+        } else {
+            return $this->render('job/create.html.twig', [
+                'job' => $job,
+                'form' => $form->createView(),
+            ]);
+            //return $this->redirectToRoute('job.create');
         }
 
         return $this->redirectToRoute('job.preview', [
