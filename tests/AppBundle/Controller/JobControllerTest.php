@@ -116,24 +116,13 @@ class JobControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/job/new');
         $this->assertEquals('AppBundle\Controller\JobController::createAction', $client->getRequest()->attributes->get('_controller'));
 
-        $form = $crawler->selectButton('Preview your job')->form([
-            'job[company]'      => 'Sensio Labs',
-            'job[url]'          => 'http://www.sensio.com/',
-            'job[logo]'         => __DIR__.'/../../../../../web/bundles/app/images/sensio-labs.gif',
-            'job[position]'     => 'Developer',
-            'job[location]'     => 'Atlanta, USA',
-            'job[description]'  => 'You will work with symfony to develop websites for our customers.',
-            'job[howToApply]' => 'Send me an email',
+        $client = $this->createJobViaForm([
             'job[email]'        => 'for.a.job@example.com',
-            'job[isPublic]'    => false,
+            'job[isPublic]'     => false,
         ]);
-        $client->submit($form);
-        $this->assertEquals('AppBundle\Controller\JobController::storeAction', $client->getRequest()->attributes->get('_controller'));
-
-        $client->followRedirect();
         $this->assertEquals('AppBundle\Controller\JobController::previewAction', $client->getRequest()->attributes->get('_controller'));
 
-        $job = $this->em->createQueryBuilder()
+        $job = $this->getEntityManager()->createQueryBuilder()
             ->select('j')
             ->from(Job::class, 'j')
             ->where('j.email = :email')
@@ -153,15 +142,19 @@ class JobControllerTest extends WebTestCase
 
     public function testCreatingJobFormWithInvalidData()
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/job/new');
-        $form = $crawler->selectButton('Preview your job')->form([
+        static::createClient()->request('GET', '/job/new');
+
+        $client = $this->createJobViaForm([
             'job[company]'      => 'Sensio Labs',
+            'job[url]'          => null,
             'job[position]'     => 'Developer',
             'job[location]'     => 'Atlanta, USA',
+            'job[description]'  => null,
+            'job[howToApply]'   => null,
             'job[email]'        => 'not.an.email',
-        ]);
-        $crawler = $client->submit($form);
+            'job[isPublic]'     => false,
+        ], false);
+        $crawler = $client->getCrawler();
         $this->assertEquals('AppBundle\Controller\JobController::storeAction', $client->getRequest()->attributes->get('_controller'));
         // check if we have 3 errors
         $this->assertTrue($crawler->filter('.error_list')->count() == 3);
@@ -173,6 +166,121 @@ class JobControllerTest extends WebTestCase
         $this->assertTrue($crawler->filter('#job_email')->siblings()->first()->filter('.error_list')->count() == 1);
     }
 
+    public function testPublishJob()
+    {
+        $client = $this->createJobViaForm(['job[position]' => 'FOO1']);
+        $crawler = $client->getCrawler();
+        $form = $crawler->selectButton('Publish')->form();
+        $client->submit($form);
+
+        //$query = $this->getEntityManager()->createQuery('SELECT count(j.id) from AppBundle:Job j WHERE j.position = :position AND j.isActivated = 1');
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('count(j.id)')
+            ->from(Job::class, 'j')
+            ->where('j.position = :position')
+            ->andWhere('j.isActivated = 1');
+        $query->setParameter('position', 'FOO1');
+
+        $this->assertTrue(1 == $query->getQuery()->getSingleScalarResult());
+    }
+
+    public function testDeleteJob()
+    {
+        $client = $this->createJobViaForm(['job[position]' => 'FOO2']);
+        $crawler = $client->getCrawler();
+        $form = $crawler->selectButton('Delete')->form();
+        $client->submit($form);
+
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('count(j.id)')
+            ->from(Job::class, 'j')
+            ->where('j.position = :position');
+        $query->setParameter('position', 'FOO2');
+
+        $this->assertTrue(0 == $query->getQuery()->getSingleScalarResult());
+    }
+
+    public function testEditJob()
+    {
+        $client = $this->createJobViaForm(['job[position]' => 'FOO3']);
+
+        $crawler = $client->getCrawler();
+        $form = $crawler->selectButton('Publish')->form();
+        $client->submit($form);
+        $client->followRedirect();
+        $client->getCrawler();
+
+        $crawler = $client->request('GET', sprintf('/job/%s/edit', $this->getJobByPosition('FOO3')->getToken()));
+        $this->assertTrue(404 === $client->getResponse()->getStatusCode());
+    }
+
+    public function testExtendJob()
+    {
+        // A job validity cannot be extended before the job expires soon
+        $client = $this->createJobViaForm(['job[position]' => 'FOO4'], true);
+        $crawler = $client->getCrawler();
+        $this->assertTrue($crawler->filter('input[type=submit]:contains("Extend")')->count() == 0);
+
+        // A job validity can be extended when the job expires soon
+
+        // Create a new FOO5 job
+        $client = $this->createJobViaForm(['job[position]' => 'FOO5'], true);
+        // Get the job and change the expire date to today
+        $em = $this->getEntityManager();
+        $job = $em->getRepository(Job::class)->findOneByPosition('FOO5');
+        $job->setExpiresAt(new \DateTime());
+        $job->publish();
+        $em->persist($job);
+        $em->flush();
+
+        // Go to the preview page and extend the job
+        $crawler = $client->request('GET', sprintf('/job/%s/%s/%s/%s', $job->getCompanySlug(), $job->getLocationSlug(), $job->getToken(), $job->getPositionSlug()));
+        $crawler = $client->getCrawler();
+        $form = $crawler->selectButton('Extend')->form();
+        $client->submit($form);
+        $client->followRedirect();
+
+        // Reload the job from db
+        $job = $this->getJobByPosition('FOO5');
+        $this->getEntityManager()->refresh($job);
+
+        // Check the expiration date
+        $this->assertTrue($job->getExpiresAt()->format('y/m/d') == date('y/m/d', time() + 86400 * 30));
+    }
+
+    protected function createJobViaForm($values = [], $followRedirect = true)
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/job/new');
+        $form = $crawler->selectButton('Preview your job')->form(array_merge([
+            'job[company]'      => 'Sensio Labs',
+            'job[url]'          => 'http://www.sensio.com/',
+            'job[position]'     => 'Developer',
+            'job[location]'     => 'Atlanta, USA',
+            'job[description]'  => 'You will work with symfony to develop websites for our customers.',
+            'job[howToApply]'   => 'Send me an email',
+            'job[email]'        => 'example@example.com',
+            'job[isPublic]'     => false,
+        ], $values));
+
+        $client->submit($form);
+        if ($followRedirect) {
+            $client->followRedirect();
+        }
+        return $client;
+    }
+
+    protected function getJobByPosition($position)
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('j')
+            ->from(Job::class, 'j')
+            ->where('j.position = :position');
+        $query->setParameter('position', $position);
+        $query->setMaxResults(1);
+        return $query->getQuery()->getSingleResult();
+    }
+
     /**
      * @return mixed
      * @throws \Doctrine\ORM\NoResultException
@@ -180,10 +288,8 @@ class JobControllerTest extends WebTestCase
      */
     protected function getMostRecentProgrammingJob()
     {
-        $kernel = static::bootKernel();
-
         //$query = $em->createQuery('SELECT j from AppBundle:Job j LEFT JOIN j.category c WHERE c.slug = :slug AND j.expiresAt > :date ORDER BY j.createdAt DESC');
-        $query = $this->em->createQueryBuilder()
+        $query = $this->getEntityManager()->createQueryBuilder()
             ->select('j')
             ->from(Job::class, 'j')
             ->join(Category::class, 'c');
@@ -202,9 +308,9 @@ class JobControllerTest extends WebTestCase
      */
     protected function getExpiredJob()
     {
-        return $this->em->createQueryBuilder()
+        return $this->getEntityManager()->createQueryBuilder()
             ->select('j')
-            ->from(\AppBundle\Entity\Job::class, 'j')
+            ->from(Job::class, 'j')
             ->where('j.expiresAt < :date')
             ->setParameter('date', new \DateTime('-1 day'))
             ->setMaxResults(1)
