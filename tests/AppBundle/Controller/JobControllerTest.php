@@ -4,6 +4,7 @@ namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
+use Doctrine\ORM\EntityManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\AppBundle\AppTestTrait;
 
@@ -17,9 +18,9 @@ class JobControllerTest extends WebTestCase
     public function setUp()
     {
         $kernel = self::bootKernel();
-        $this->em = $kernel->getContainer()
+        $this->setEntityManager($kernel->getContainer()
             ->get('doctrine')
-            ->getManager();
+            ->getManager());
 
         $this->refreshDatabaseSchema();
 
@@ -37,8 +38,22 @@ class JobControllerTest extends WebTestCase
     {
         parent::tearDown();
 
-        $this->em->close();
-        $this->em = null; // avoid memory leaks
+        $this->getEntityManager()->close();
+        $this->setEntityManager(null); // avoid memory leaks
+    }
+
+    public function setEntityManager(?EntityManager $em)
+    {
+        $this->em = $em;
+        return $this;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager() : EntityManager
+    {
+        return $this->em;
     }
 
     /**
