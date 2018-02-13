@@ -5,8 +5,8 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
 use AppBundle\Services\CategoryService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,16 +37,15 @@ class CategoryController extends Controller
     /**
      * @Route("/{slug}/{page}", defaults={"page": 1}, name="category.show", requirements={"page"="\d+"})
      * @Method("GET")
-     * @ParamConverter("job", options={"repository_method" = "findBySlug"})
-     * @param string $slug
+     * @Entity("job", expr="repository.findBySlug(slug)")
+     *
      * @param $page
      * @param Category $category
      * @param CategoryService $categoryService
      * @return Response
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function showAction($slug, $page, Category $category, CategoryService $categoryService) : Response
+    public function showAction($page, Category $category, CategoryService $categoryService) : Response
     {
         $em = $this->getDoctrine()->getManager();
 

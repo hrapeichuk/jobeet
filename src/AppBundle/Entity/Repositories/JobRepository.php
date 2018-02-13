@@ -46,7 +46,6 @@ class JobRepository extends EntityRepository
     /**
      * @param null $categoryId
      * @return mixed
-     * @throws NoResultException
      * @throws NonUniqueResultException
      */
     public function countActiveJobs($categoryId = null)

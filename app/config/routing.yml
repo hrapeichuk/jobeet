@@ -11,6 +11,10 @@ _sonata_admin:
     type: sonata_admin
     prefix: /admin
 
+index:
+    path: /
+    defaults: { _controller: AppBundle:Job:index }
+
 login:
     path:   /login
     defaults:  { _controller: AppBundle:Security:login }

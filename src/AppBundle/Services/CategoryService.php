@@ -34,7 +34,6 @@ class CategoryService
      * @param $categories
      * @param null $maxActiveJobs
      * @return array
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function prepareCategoriesWithJobs($categories, $maxActiveJobs = null) : array

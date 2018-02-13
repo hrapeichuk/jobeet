@@ -14,3 +14,10 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+liip_functional_test: ~
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        dbname: 'test_%database_name%'

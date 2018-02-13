@@ -6,8 +6,8 @@ use AppBundle\Entity\Category;
 use AppBundle\Entity\Job;
 use AppBundle\Forms\JobType;
 use AppBundle\Services\CategoryService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\File\File;
@@ -23,7 +23,6 @@ class JobController extends Controller
      * @Route("/", name="job.index", methods={"GET"})
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function indexAction()
@@ -60,7 +59,7 @@ class JobController extends Controller
      * @Route("/", name="job.store", methods={"POST"})
      *
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function storeAction(Request $request)
     {
@@ -72,6 +71,12 @@ class JobController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($job);
             $em->flush();
+        } else {
+            return $this->render('job/create.html.twig', [
+                'job' => $job,
+                'form' => $form->createView(),
+            ]);
+            //return $this->redirectToRoute('job.create');
         }
 
         return $this->redirectToRoute('job.preview', [
@@ -158,7 +163,7 @@ class JobController extends Controller
 
     /**
      * @Route("/{company}/{location}/{id}/{position}", name="job.show", requirements={"id"="\d+"})
-     * @ParamConverter("job", options={"repository_method" = "getActiveJob"})
+     * @Entity("job", expr="repository.getActiveJob(id)")
      * @Method("GET")
      *
      * @param Job $job
@@ -190,7 +195,7 @@ class JobController extends Controller
      * Finds and displays the preview page for a job entity.
      *
      * @Route("/{company}/{location}/{token}/{position}", name="job.preview", requirements={"token"="\w+"})
-     * @ParamConverter("job", options={"exclude": {"company", "location", "position"}})
+     * @Entity("job", expr="repository.findOneByToken(token)")
      * @Method("GET")
      * @param Job $job
      * @return \Symfony\Component\HttpFoundation\Response
@@ -199,11 +204,13 @@ class JobController extends Controller
     {
         $deleteForm = $this->createDeleteForm($job);
         $publishForm = $this->createPublishForm($job);
+        $extendForm = $this->createExtendForm($job);
 
         return $this->render('job/show.html.twig', [
             'job' => $job,
             'delete_form' => $deleteForm->createView(),
             'publish_form' => $publishForm->createView(),
+            'extend_form' => $extendForm->createView(),
         ]);
     }
 
@@ -236,6 +243,48 @@ class JobController extends Controller
     }
 
     /**
+     * Extends a job entity.
+     *
+     * @Route("/job/{token}/extend", name="job.extend")
+     * @Method("POST")
+     * @param Request $request
+     * @param Job $job
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function extendAction(Request $request, Job $job)
+    {
+        $form = $this->createExtendForm($job);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $job = $em->getRepository(Job::class)->extend($job);
+            $em->persist($job);
+            $em->flush();
+            $this->addFlash('notice', sprintf('Your job validity has been extended until %s.', $job->getExpiresAt()->format('m/d/Y')));
+        }
+
+        return $this->redirectToRoute('job.preview', [
+            'token' => $job->getToken(),
+            'company' => $job->getCompanySlug(),
+            'location' => $job->getLocationSlug(),
+            'position' => $job->getPositionSlug()
+        ]);
+    }
+
+    /**
+     * @param Job $job
+     * @return \Symfony\Component\Form\FormInterface
+     */
+    private function createExtendForm(Job $job)
+    {
+        return $this->createFormBuilder(['token' => $job->getToken()])
+            ->add('token', HiddenType::class)
+            ->setMethod('POST')
+            ->getForm();
+    }
+
+    /**
      * @param Job $job
      * @return \Symfony\Component\Form\FormInterface
      */
@@ -262,6 +311,10 @@ class JobController extends Controller
             ->getForm();
     }
 
+    /**
+     * @param Job $job
+     * @return array
+     */
     public function prepareJobAttributesForHistory(Job $job)
     {
         return [

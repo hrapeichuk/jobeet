@@ -57,6 +57,18 @@ class JobService
     }
 
     /**
+     * Clears jobs where expires_at date is older half of year from current.
+     * @param int $days
+     * @return mixed
+     */
+    public function clearOldNonActivatedJobs(int $days)
+    {
+        $em = $this->entityManager;
+        $repository = $em->getRepository(Job::class);
+        return $repository->cleanup($days);
+    }
+
+    /**
      * Deletes image of the job from the directory.
      * @param Job $job
      */
