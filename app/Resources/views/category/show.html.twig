@@ -10,43 +10,52 @@
 {% endblock %}
 
 {% block body %}
-    <div class="category">
-        <div class="feed">
-            <a href="">Feed</a>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-10">
+                <h4>{{ category.name }}</h4>
+            </div>
+            <div class="col-sm-2">
+                <a href="#" class="btn btn-primary pull-right">
+                    <i class="fas fa-rss-square" aria-hidden="true"></i>
+                    Feed
+                </a>
+            </div>
         </div>
-        <h1>{{ category.name }}</h1>
     </div>
 
     {{ include('job/list.html.twig') }}
 
-    {% if lastPage > 1 %}
-        <div class="pagination">
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': 1 }) }}">
-                <img src="{{ asset('images/first.png') }}" alt="First page" title="First page" />
-            </a>
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': previousPage }) }}">
-                <img src="{{ asset('images/previous.png') }}" alt="Previous page" title="Previous page" />
-            </a>
-            {% for page in 1..lastPage %}
-                {% if page == currentPage %}
-                    {{ page }}
-                {% else %}
-                    <a href="{{ path('category.show', { 'slug': category.slug, 'page': page }) }}">{{ page }}</a>
-                {% endif %}
-            {% endfor %}
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': nextPage }) }}">
-                <img src="{{ asset('images/next.png') }}" alt="Next page" title="Next page" />
-            </a>
-            <a href="{{ path('category.show', { 'slug': category.slug, 'page': lastPage }) }}">
-                <img src="{{ asset('images/last.png') }}" alt="Last page" title="Last page" />
-            </a>
-        </div>
-    {% endif %}
-
-    <div class="pagination_desc">
-        <strong>{{ totalJobs }}</strong> jobs in this category
+    <div class="col-sm-3" style="margin-top: 20px;">
+        <i>{{ totalJobs }} jobs in this category
         {% if lastPage > 1 %}
-            - page <strong>{{ currentPage }}/{{ lastPage }}</strong>
+            - page {{ currentPage }}/{{ lastPage }}</i>
+        {% endif %}
+    </div>
+
+    <div>
+        {% if lastPage > 1 %}
+            <nav>
+                <ul class="pagination">
+                    <li class="{{ currentPage == 1 ? 'disabled' : '' }}">
+                        <a href="{{ path('category.show', { 'slug': category.slug, 'page': previousPage }) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% for page in 1..lastPage %}
+                        {% if page == currentPage %}
+                            <li class="active"><a href="#">{{ page }}<span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="{{ path('category.show', { 'slug': category.slug, 'page': page }) }}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="{{ currentPage == lastPage ? 'disabled' : '' }}">
+                        <a href="{{ path('category.show', { 'slug': category.slug, 'page': nextPage }) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         {% endif %}
     </div>
 {% endblock %}

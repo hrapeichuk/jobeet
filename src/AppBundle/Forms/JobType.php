@@ -31,6 +31,7 @@ class JobType extends AbstractType
                     },
                     'expanded' => true,
                     'constraints' => [new Length(['min' => 3])],
+                    'label_attr' => ['class' => 'radio-inline'],
                 ]
             )
             ->add('company')
@@ -45,7 +46,7 @@ class JobType extends AbstractType
                     new NotBlank(),
                 ]
             ])
-            ->add('isPublic', null, ['label' => 'Public?'])
+            ->add('isPublic', null, ['label' => 'Public'])
             ->add('email', null, [
                 'constraints' => [
                     new Email(),

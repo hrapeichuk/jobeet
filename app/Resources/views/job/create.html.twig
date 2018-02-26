@@ -20,98 +20,65 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Job creation</h1>
-    {{ form_start(form, {'action': path('job.store'), 'method': 'POST'}) }}
-        <table id="job_form">
-            <tbody>
-            <tr>
-                <th>{{ form_label(form.category) }}</th>
-                <td>
-                    {{ form_errors(form.category) }}
-                    {{ form_widget(form.category) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.type) }}</th>
-                <td>
-                    {{ form_errors(form.type) }}
-                    {{ form_widget(form.type) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.company) }}</th>
-                <td>
-                    {{ form_errors(form.company) }}
-                    {{ form_widget(form.company) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.logo) }}</th>
-                <td>
-                    {{ form_errors(form.logo) }}
-                    {{ form_widget(form.logo) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.url) }}</th>
-                <td>
-                    {{ form_errors(form.url) }}
-                    {{ form_widget(form.url) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.position) }}</th>
-                <td>
-                    {{ form_errors(form.position) }}
-                    {{ form_widget(form.position) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.location) }}</th>
-                <td>
-                    {{ form_errors(form.location) }}
-                    {{ form_widget(form.location) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.description) }}</th>
-                <td>
-                    {{ form_errors(form.description) }}
-                    {{ form_widget(form.description) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.howToApply) }}</th>
-                <td>
-                    {{ form_errors(form.howToApply) }}
-                    {{ form_widget(form.howToApply) }}
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.isPublic) }}</th>
-                <td>
-                    {{ form_errors(form.isPublic) }}
-                    {{ form_widget(form.isPublic) }}
-                    <br /> Whether the job can also be published on affiliate websites or not.
-                </td>
-            </tr>
-            <tr>
-                <th>{{ form_label(form.email) }}</th>
-                <td>
-                    {{ form_errors(form.email) }}
-                    {{ form_widget(form.email) }}
-                </td>
-            </tr>
-            </tbody>
-            <tfoot>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="Preview your job" />
-                </td>
-            </tr>
-            </tfoot>
-        </table>
+<div class="container">
+    <div class="row">
+        {% block form %}
+            <h2 style="margin-bottom: 40px;">Job creation</h2>
+            {{ form_start(form, {'action': path('job.store'), 'method': 'POST'}) }}
 
-        {{ form_rest(form) }}
-    {{ form_end(form) }}
+            {{ form_row(form.category) }}
+            {{ form_errors(form.category) }}
+            {{ form_widget(form.category) }}
+
+            {{ form_row(form.type) }}
+            {{ form_errors(form.type) }}
+            {{ form_widget(form.type) }}
+
+            {{ form_row(form.company) }}
+            {{ form_errors(form.company) }}
+            {{ form_widget(form.company) }}
+
+            {{ form_row(form.logo) }}
+            {{ form_errors(form.logo) }}
+            {{ form_widget(form.logo) }}
+
+            {{ form_row(form.url) }}
+            {{ form_errors(form.url) }}
+            {{ form_widget(form.url) }}
+
+            {{ form_row(form.position) }}
+            {{ form_errors(form.position) }}
+            {{ form_widget(form.position) }}
+
+            {{ form_row(form.location) }}
+            {{ form_errors(form.location) }}
+            {{ form_widget(form.location) }}
+
+            {{ form_row(form.description) }}
+            {{ form_errors(form.description) }}
+            {{ form_widget(form.description) }}
+
+            {{ form_row(form.howToApply) }}
+            {{ form_errors(form.howToApply) }}
+            {{ form_widget(form.howToApply) }}
+
+            {{ form_row(form.isPublic) }}
+            <small class="col-sm-offset-2">
+                <i>Whether the job can also be published on affiliate websites or not.</i>
+            </small>
+
+            {{ form_errors(form.isPublic) }}
+            {{ form_widget(form.isPublic) }}
+
+            {{ form_row(form.email) }}
+            {{ form_errors(form.email) }}
+            {{ form_widget(form.email) }}
+
+            <button class="btn btn-primary pull-right" type="submit">Preview your job</button>
+
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+        {% endblock %}
+    </div>
+</div>
 {% endblock %}
